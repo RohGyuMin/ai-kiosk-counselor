@@ -45,3 +45,11 @@ test-results/
 
 .env.local
 coverage/
+
+# local data (sqlite)
+/data
+*.db
+*.db-journal
+
+# claude local
+/.claude

@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 500" width="800" height="500">
+  <defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#122150"/><stop offset="1" stop-color="#0b1733"/></linearGradient></defs>
+  <rect width="800" height="500" fill="url(#g)"/>
+  <text x="400" y="60" fill="#d8bd85" font-size="34" font-family="serif" text-anchor="middle">청약 일정 안내</text>
+  <line x1="150" y1="250" x2="650" y2="250" stroke="#c8a86a" stroke-width="3"/>
+  <g font-family="sans-serif" text-anchor="middle">
+    <g fill="#d8bd85"><circle cx="200" cy="250" r="10"/><circle cx="350" cy="250" r="10"/><circle cx="500" cy="250" r="10"/><circle cx="630" cy="250" r="10"/></g>
+    <g fill="#f6f1e7" font-size="17">
+      <text x="200" y="220">특별공급</text><text x="200" y="290">11/16</text>
+      <text x="350" y="220">1순위</text><text x="350" y="290">11/17</text>
+      <text x="500" y="220">발표</text><text x="500" y="290">11/25</text>
+      <text x="630" y="220">계약</text><text x="630" y="290">12/08~10</text>
+    </g>
+  </g>
+</svg>

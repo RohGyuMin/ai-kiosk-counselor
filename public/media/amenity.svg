@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 500" width="800" height="500">
+  <defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#1b2f6e"/><stop offset="1" stop-color="#0b1733"/></linearGradient></defs>
+  <rect width="800" height="500" fill="url(#g)"/>
+  <text x="400" y="60" fill="#d8bd85" font-size="34" font-family="serif" text-anchor="middle">커뮤니티 · 생활 인프라</text>
+  <g font-family="sans-serif" text-anchor="middle">
+    <g fill="none" stroke="#c8a86a" stroke-width="3">
+      <rect x="120" y="130" width="180" height="120" rx="10"/>
+      <rect x="320" y="130" width="180" height="120" rx="10"/>
+      <rect x="520" y="130" width="160" height="120" rx="10"/>
+      <rect x="200" y="290" width="180" height="120" rx="10"/>
+      <rect x="420" y="290" width="180" height="120" rx="10"/>
+    </g>
+    <g fill="#f6f1e7" font-size="20">
+      <text x="210" y="198">수영장</text><text x="410" y="198">피트니스</text><text x="600" y="198">라운지</text>
+      <text x="290" y="358">골프연습장</text><text x="510" y="358">게스트하우스</text>
+    </g>
+  </g>
+</svg>

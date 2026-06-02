@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 500" width="800" height="500">
+  <defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#1b2f6e"/><stop offset="1" stop-color="#0b1733"/></linearGradient></defs>
+  <rect width="800" height="500" fill="url(#g)"/>
+  <text x="400" y="60" fill="#d8bd85" font-size="34" font-family="serif" text-anchor="middle">입지 · 교통 안내</text>
+  <g stroke="#c8a86a" stroke-width="4" fill="none" stroke-linecap="round">
+    <path d="M120 360 Q300 200 460 300 T700 240"/>
+  </g>
+  <g fill="#d8bd85"><circle cx="120" cy="360" r="12"/><circle cx="460" cy="300" r="12"/><circle cx="700" cy="240" r="14"/></g>
+  <text x="120" y="400" fill="#f6f1e7" font-size="18" text-anchor="middle" font-family="sans-serif">단지</text>
+  <text x="460" y="340" fill="#f6f1e7" font-size="18" text-anchor="middle" font-family="sans-serif">호수공원</text>
+  <text x="700" y="280" fill="#f6f1e7" font-size="18" text-anchor="middle" font-family="sans-serif">센트럴역</text>
+  <text x="400" y="460" fill="#f6f1e7" font-size="20" text-anchor="middle" font-family="sans-serif" opacity="0.8">센트럴역 도보 5분 · GTX 환승</text>
+</svg>

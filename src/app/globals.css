@@ -3,25 +3,85 @@
 @tailwind utilities;
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* 프리미엄 분양/건설 팔레트 */
+  --navy-900: #0b1733;
+  --navy-800: #122150;
+  --navy-700: #1b2f6e;
+  --gold-500: #c8a86a;
+  --gold-400: #d8bd85;
+  --cream: #f6f1e7;
+  --ink: #0b1733;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html,
+body {
+  height: 100%;
 }
 
 body {
-  color: var(--foreground);
-  background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
+  color: var(--ink);
+  background: var(--cream);
+  font-family: var(--font-geist-sans), 'Pretendard', system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
 }
 
 @layer utilities {
   .text-balance {
     text-wrap: balance;
+  }
+  .font-serif-display {
+    font-family: 'Nanum Myeongjo', 'Noto Serif KR', Georgia, serif;
+  }
+  /* 골드 그라데이션 텍스트 */
+  .text-gold-gradient {
+    background: linear-gradient(135deg, #d8bd85 0%, #c8a86a 50%, #a9874a 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+}
+
+/* 키오스크: 스크롤바 최소화, 텍스트 선택 방지(터치 환경) */
+.kiosk-root {
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+@keyframes pulse-ring {
+  0% {
+    box-shadow: 0 0 0 0 rgba(200, 168, 106, 0.5);
+  }
+  70% {
+    box-shadow: 0 0 0 28px rgba(200, 168, 106, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(200, 168, 106, 0);
+  }
+}
+.animate-pulse-ring {
+  animation: pulse-ring 1.6s ease-out infinite;
+}
+
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.animate-fade-up {
+  animation: fade-up 0.5s ease both;
+}
+
+@keyframes soundwave {
+  0%,
+  100% {
+    transform: scaleY(0.3);
+  }
+  50% {
+    transform: scaleY(1);
   }
 }
