@@ -17,7 +17,7 @@ type Provider = 'gemini' | 'anthropic' | 'none';
 
 const GEMINI_MODEL = process.env.GEMINI_MODEL || 'gemini-2.5-flash';
 const ANTHROPIC_MODEL = process.env.ANTHROPIC_MODEL || 'claude-sonnet-4-5';
-const MAX_TOKENS = 400;
+const MAX_TOKENS = 600;
 
 /** 사용할 프로바이더 결정: LLM_PROVIDER 환경변수 우선, 없으면 보유 키로 자동 선택 */
 function resolveProvider(): Provider {
@@ -49,6 +49,9 @@ async function callGemini(message: string, history: ChatMessage[]): Promise<stri
     config: {
       systemInstruction: buildSystemPrompt(),
       maxOutputTokens: MAX_TOKENS,
+      // gemini-2.5-* 는 기본적으로 '사고(thinking)' 토큰을 쓴다. 키오스크는 짧고 빠른
+      // 답변이 목적이고, 사고 토큰이 출력 한도를 잠식해 답변이 잘리는 것을 막기 위해 끈다.
+      thinkingConfig: { thinkingBudget: 0 },
     },
   });
 
