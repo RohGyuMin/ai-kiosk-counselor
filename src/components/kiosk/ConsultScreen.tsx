@@ -62,7 +62,7 @@ export default function ConsultScreen({
         ]);
         if (data.imageKey && MEDIA[data.imageKey]) setImageKey(data.imageKey);
         if (data.keyword) topicsRef.current.add(data.keyword);
-        if (supported) speak(data.answer);
+        void speak(data.answer); // 서버(Gemini) TTS → 실패 시 브라우저 음성 자동 폴백
       } catch {
         setMessages((prev) => [
           ...prev,
@@ -76,7 +76,7 @@ export default function ConsultScreen({
         setLoading(false);
       }
     },
-    [loading, messages, visitor.sessionId, supported, speak, stopSpeaking],
+    [loading, messages, visitor.sessionId, speak, stopSpeaking],
   );
 
   const onMic = useCallback(() => {

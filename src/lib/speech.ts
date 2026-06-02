@@ -44,6 +44,16 @@ export function useSpeech() {
   const [speaking, setSpeaking] = useState(false);
   const [transcript, setTranscript] = useState('');
   const recognitionRef = useRef<SpeechRecognitionLike | null>(null);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+
+  // 재생 중인 서버 TTS 오디오 중단
+  const stopAudio = useCallback(() => {
+    if (audioRef.current) {
+      audioRef.current.pause();
+      audioRef.current.src = '';
+      audioRef.current = null;
+    }
+  }, []);
 
   useEffect(() => {
     const hasSTT = !!getRecognitionCtor();
@@ -57,46 +67,54 @@ export function useSpeech() {
   }, []);
 
   /** 음성 인식 시작. 최종 인식 결과를 onFinal로 전달 */
-  const startListening = useCallback((onFinal: (text: string) => void) => {
-    const Ctor = getRecognitionCtor();
-    if (!Ctor) return;
+  const startListening = useCallback(
+    (onFinal: (text: string) => void) => {
+      const Ctor = getRecognitionCtor();
+      if (!Ctor) return;
 
-    // 진행 중인 TTS 중단(에코 방지)
-    if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
-      window.speechSynthesis.cancel();
+      // 진행 중인 TTS 중단(에코 방지)
+      stopAudio();
+      if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+      }
+      setSpeaking(false);
+
+      const recognition = new Ctor();
+      recognition.lang = 'ko-KR';
+      recognition.continuous = false;
+      recognition.interimResults = true;
+      setTranscript('');
+
+      recognition.onresult = (e) => {
+        let interim = '';
+        let final = '';
+        for (let i = 0; i < e.results.length; i++) {
+          const r = e.results[i];
+          if (r.isFinal) final += r[0].transcript;
+          else interim += r[0].transcript;
+        }
+        setTranscript(final || interim);
+        if (final) {
+          onFinal(final.trim());
+          setListening(false);
+        }
+      };
+      recognition.onerror = () => setListening(false);
+      recognition.onend = () => setListening(false);
+
+      recognitionRef.current = recognition;
+      recognition.start();
+      setListening(true);
+    },
+    [stopAudio],
+  );
+
+  /** 브라우저 기본 TTS (폴백) */
+  const speakBrowser = useCallback((text: string) => {
+    if (typeof window === 'undefined' || !('speechSynthesis' in window)) {
+      setSpeaking(false);
+      return;
     }
-
-    const recognition = new Ctor();
-    recognition.lang = 'ko-KR';
-    recognition.continuous = false;
-    recognition.interimResults = true;
-    setTranscript('');
-
-    recognition.onresult = (e) => {
-      let interim = '';
-      let final = '';
-      for (let i = 0; i < e.results.length; i++) {
-        const r = e.results[i];
-        if (r.isFinal) final += r[0].transcript;
-        else interim += r[0].transcript;
-      }
-      setTranscript(final || interim);
-      if (final) {
-        onFinal(final.trim());
-        setListening(false);
-      }
-    };
-    recognition.onerror = () => setListening(false);
-    recognition.onend = () => setListening(false);
-
-    recognitionRef.current = recognition;
-    recognition.start();
-    setListening(true);
-  }, []);
-
-  /** 텍스트를 음성으로 출력 */
-  const speak = useCallback((text: string) => {
-    if (typeof window === 'undefined' || !('speechSynthesis' in window)) return;
     window.speechSynthesis.cancel();
     const utter = new SpeechSynthesisUtterance(text);
     utter.lang = 'ko-KR';
@@ -108,12 +126,60 @@ export function useSpeech() {
     window.speechSynthesis.speak(utter);
   }, []);
 
+  /**
+   * 텍스트를 음성으로 출력. 먼저 서버(Gemini) 신경망 TTS를 시도하고,
+   * 키 없음/실패(204·오류) 시 브라우저 기본 음성으로 폴백한다.
+   */
+  const speak = useCallback(
+    async (text: string) => {
+      stopAudio();
+      if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+      }
+      setSpeaking(true);
+
+      try {
+        const res = await fetch('/api/tts', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ text }),
+        });
+
+        // 204(폴백 신호)·실패 → 브라우저 음성
+        if (res.status !== 200) {
+          speakBrowser(text);
+          return;
+        }
+
+        const blob = await res.blob();
+        const url = URL.createObjectURL(blob);
+        const audio = new Audio(url);
+        audioRef.current = audio;
+        audio.onended = () => {
+          setSpeaking(false);
+          URL.revokeObjectURL(url);
+        };
+        audio.onerror = () => {
+          setSpeaking(false);
+          URL.revokeObjectURL(url);
+          speakBrowser(text);
+        };
+        await audio.play();
+      } catch {
+        // 네트워크 등 실패 → 브라우저 음성
+        speakBrowser(text);
+      }
+    },
+    [stopAudio, speakBrowser],
+  );
+
   const stopSpeaking = useCallback(() => {
+    stopAudio();
     if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
       window.speechSynthesis.cancel();
     }
     setSpeaking(false);
-  }, []);
+  }, [stopAudio]);
 
   return {
     supported,
