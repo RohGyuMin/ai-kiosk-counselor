@@ -45,12 +45,18 @@ export function useSpeech() {
   const [transcript, setTranscript] = useState('');
   const recognitionRef = useRef<SpeechRecognitionLike | null>(null);
   const audioRef = useRef<HTMLAudioElement | null>(null);
+  // 재생 세대 토큰: 새 speak가 시작되면 증가시켜, 진행 중이던 이전 요청을 무효화한다.
+  const playTokenRef = useRef(0);
 
-  // 재생 중인 서버 TTS 오디오 중단
+  // 재생 중인 서버 TTS 오디오 중단 (진행 중이던 speak도 무효화)
   const stopAudio = useCallback(() => {
-    if (audioRef.current) {
-      audioRef.current.pause();
-      audioRef.current.src = '';
+    playTokenRef.current += 1;
+    const a = audioRef.current;
+    if (a) {
+      // 핸들러를 먼저 떼어내, 멈추는 과정에서 폴백 음성이 끼어들지 않게 한다.
+      a.onended = null;
+      a.onerror = null;
+      a.pause();
       audioRef.current = null;
     }
   }, []);
@@ -132,10 +138,11 @@ export function useSpeech() {
    */
   const speak = useCallback(
     async (text: string) => {
-      stopAudio();
+      stopAudio(); // 이전 재생 중단 + 토큰 증가
       if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
         window.speechSynthesis.cancel();
       }
+      const myToken = playTokenRef.current; // 이번 speak의 세대
       setSpeaking(true);
 
       try {
@@ -145,6 +152,9 @@ export function useSpeech() {
           body: JSON.stringify({ text }),
         });
 
+        // 더 새로운 speak가 시작됐다면 이 요청은 폐기
+        if (myToken !== playTokenRef.current) return;
+
         // 204(폴백 신호)·실패 → 브라우저 음성
         if (res.status !== 200) {
           speakBrowser(text);
@@ -152,6 +162,8 @@ export function useSpeech() {
         }
 
         const blob = await res.blob();
+        if (myToken !== playTokenRef.current) return; // 재확인
+
         const url = URL.createObjectURL(blob);
         const audio = new Audio(url);
         audioRef.current = audio;
@@ -162,12 +174,11 @@ export function useSpeech() {
         audio.onerror = () => {
           setSpeaking(false);
           URL.revokeObjectURL(url);
-          speakBrowser(text);
         };
         await audio.play();
       } catch {
-        // 네트워크 등 실패 → 브라우저 음성
-        speakBrowser(text);
+        // 네트워크 등 실패 → 브라우저 음성 (단, 최신 요청일 때만)
+        if (myToken === playTokenRef.current) speakBrowser(text);
       }
     },
     [stopAudio, speakBrowser],
