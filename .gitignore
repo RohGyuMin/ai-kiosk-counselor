@@ -53,3 +53,6 @@ coverage/
 
 # claude local
 /.claude
+
+# 실수로 중첩 복제된 자기 자신
+/ai-kiosk-counselor
