@@ -133,6 +133,16 @@ pnpm build && pnpm start
 4. 상담 종료 → 요약 화면
 5. `/admin` 에서 방문 기록·키워드 통계 확인 → 엑셀 다운로드
 
+### 클라우드 배포 (Google Cloud Run)
+
+한 줄로 GCP에 배포할 수 있다 (Dockerfile 포함, 자동 빌드):
+
+```bash
+gcloud run deploy ai-kiosk-counselor --source . --region asia-northeast3 --allow-unauthenticated
+```
+
+상세 절차(시크릿 등록, 도메인 연결, 비용 등): [`docs/deploy-gcp.md`](docs/deploy-gcp.md)
+
 ---
 
 ## 6. RFP 산출물 매핑

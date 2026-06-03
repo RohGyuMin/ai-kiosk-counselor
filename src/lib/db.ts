@@ -14,7 +14,11 @@ let _db: DatabaseSync | null = null;
 function getDb(): DatabaseSync {
   if (_db) return _db;
 
-  const dataDir = path.join(process.cwd(), 'data');
+  // 데이터 디렉토리 우선순위:
+  //   1) DATA_DIR (배포 환경에서 지정) — Cloud Run 등에서 /tmp 같은 쓰기 가능 경로
+  //   2) <cwd>/data — 로컬 개발
+  // Cloud Run은 컨테이너 파일시스템이 휘발성이므로 /tmp로 두고 데모용으로 사용한다.
+  const dataDir = process.env.DATA_DIR || path.join(process.cwd(), 'data');
   mkdirSync(dataDir, { recursive: true });
   const db = new DatabaseSync(path.join(dataDir, 'kiosk.db'));
 
