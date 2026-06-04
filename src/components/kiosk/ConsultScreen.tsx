@@ -64,6 +64,17 @@ export default function ConsultScreen({
       const history: ChatMessage[] = messages.map((m) => ({ role: m.role, content: m.content }));
       setMessages((prev) => [...prev, { role: 'user', content: q }]);
       setLoading(true);
+      // 즉시 짧은 인터점(0지연) — 본 답변 도착까지의 갭을 가린다.
+      // 브라우저 내장 TTS로 빠르게(<200ms) 시작. 본 답변 speak()가 시작되면 자동으로 중단됨.
+      if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
+        const PROMPTS = ['네, 알려드릴게요.', '잠시만요.', '네, 안내해드리겠습니다.'];
+        const filler = PROMPTS[Math.floor(q.length % PROMPTS.length)];
+        window.speechSynthesis.cancel();
+        const utter = new SpeechSynthesisUtterance(filler);
+        utter.lang = 'ko-KR';
+        utter.rate = 1.1;
+        window.speechSynthesis.speak(utter);
+      }
       try {
         const res = await fetch('/api/chat', {
           method: 'POST',

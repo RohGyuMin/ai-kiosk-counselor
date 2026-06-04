@@ -17,7 +17,7 @@ type Provider = 'gemini' | 'anthropic' | 'none';
 
 const GEMINI_MODEL = process.env.GEMINI_MODEL || 'gemini-2.5-flash';
 const ANTHROPIC_MODEL = process.env.ANTHROPIC_MODEL || 'claude-sonnet-4-5';
-const MAX_TOKENS = 600;
+const MAX_TOKENS = 250; // 음성 답변용 — 짧게 잡아 LLM 응답·TTS 합성 시간 단축
 
 /** 사용할 프로바이더 결정: LLM_PROVIDER 환경변수 우선, 없으면 보유 키로 자동 선택 */
 function resolveProvider(): Provider {

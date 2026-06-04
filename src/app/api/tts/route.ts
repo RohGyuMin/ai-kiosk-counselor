@@ -10,12 +10,12 @@ export async function POST(req: NextRequest) {
     const { text } = await req.json();
     if (!text?.trim()) return new NextResponse(null, { status: 400 });
 
-    const wav = await synthesizeSpeech(text.trim());
-    if (!wav) return new NextResponse(null, { status: 204 }); // 폴백 신호
+    const result = await synthesizeSpeech(text.trim());
+    if (!result) return new NextResponse(null, { status: 204 }); // 폴백 신호
 
-    return new NextResponse(new Uint8Array(wav), {
+    return new NextResponse(new Uint8Array(result.buf), {
       status: 200,
-      headers: { 'Content-Type': 'audio/wav', 'Cache-Control': 'no-store' },
+      headers: { 'Content-Type': result.contentType, 'Cache-Control': 'no-store' },
     });
   } catch (err) {
     console.error('[tts] 처리 실패:', err);
