@@ -1,132 +1,103 @@
-// 가상 아파트 단지 지식베이스
+// 가상 의원 지식베이스 — 데모용 가공 정보
 //
-// 데모용으로 만든 가공의 단지 정보. 실제 단지와 무관하다.
 // 이 데이터가 (1) LLM 시스템 프롬프트의 근거가 되고,
 // (2) LLM을 못 쓸 때의 폴백(FAQ) 답변 근거도 된다.
 
-export const PROJECT = {
-  brand: '한빛자이 더 센트럴',
-  developer: '한빛건설 · 자이',
-  location: '경기도 시안시 미래구 센트럴로 100 (센트럴역 도보 5분)',
-  totalHouseholds: 1248,
-  buildings: 12,
-  floors: '지하 3층 ~ 지상 35층',
-  moveInDate: '2028년 6월 예정',
-  parking: '세대당 1.42대 (전기차 충전 120면)',
-  heating: '개별난방(도시가스)',
-  types: [
+export const CLINIC = {
+  name: '한빛내과의원',
+  slogan: '가까운 곳에서, 믿을 수 있는 진료',
+  director: '김한빛 원장 (내과 전문의)',
+  location: '서울시 마포구 합정로 123, 한빛빌딩 3층',
+  nearbyStation: '합정역 3번 출구 도보 2분',
+  parking: '건물 지하주차장 2시간 무료 (원무과에서 스티커 수령)',
+  phone: '02-123-4567',
+  departments: [
     {
-      name: '59A',
-      exclusive: '59.94㎡',
-      supply: '84.21㎡',
-      households: 320,
-      rooms: '방3·욕실2',
-      price: '6억 4,800만',
+      name: '내과',
+      desc: '감기·발열·소화기·고혈압·당뇨·갑상선 등 성인 만성·급성 질환',
     },
     {
-      name: '74B',
-      exclusive: '74.88㎡',
-      supply: '102.5㎡',
-      households: 408,
-      rooms: '방3·욕실2',
-      price: '7억 9,500만',
+      name: '가정의학과',
+      desc: '건강검진·예방접종·금연·비만 관리, 전 연령 주치의 진료',
     },
     {
-      name: '84A',
-      exclusive: '84.97㎡',
-      supply: '114.3㎡',
-      households: 412,
-      rooms: '방4·욕실2',
-      price: '9억 2,000만',
-    },
-    {
-      name: '101P',
-      exclusive: '101.2㎡',
-      supply: '135.8㎡',
-      households: 108,
-      rooms: '방4·욕실2·알파룸',
-      price: '12억 6,000만',
+      name: '소아청소년과',
+      desc: '영유아 검진·예방접종·소아 발열·성장 상담 (만 18세 이하)',
     },
   ],
-  schedule: {
-    특별공급: '2026-11-16 (월)',
-    '1순위': '2026-11-17 (화)',
-    '2순위': '2026-11-18 (수)',
-    당첨자발표: '2026-11-25 (화)',
-    정당계약: '2026-12-08 ~ 12-10',
+  hours: {
+    평일: '09:00 – 18:00',
+    토요일: '09:00 – 13:00',
+    점심시간: '13:00 – 14:00 (진료 중단)',
+    일요일공휴일: '휴진',
   },
-  amenities: [
-    '단지 내 국공립 어린이집 2곳',
-    '센트럴역(수도권 광역급행 GTX-가칭) 도보 5분',
-    '대형마트·스트리트형 상가 단지 직결',
-    '센트럴 호수공원 인접, 단지 내 1.2km 산책로',
-    '커뮤니티: 실내수영장·피트니스·골프연습장·라운지·게스트하우스',
-  ],
-  finance: {
-    중도금: '60% 무이자 (6회 분납)',
-    계약금: '10%',
-    잔금: '30%',
-    발코니확장: '전 타입 무상 (지정 기간 내)',
+  reception: {
+    예약: '네이버 예약 또는 똑닥 앱으로 사전 예약 가능 (당일 예약 당일 진료)',
+    현장접수: '본 키오스크에서 번호표 발급 후 대기',
+    준비물: '신분증, 건강보험증(또는 앱), 기존 복용 약 목록',
+  },
+  insurance: {
+    건강보험: '건강보험 적용 (초진료·재진료 본인 부담 약 1,500원~5,000원)',
+    비급여: '건강검진·예방접종·비만 주사 등은 비급여 항목',
+    산재의보: '산재·자동차보험 진료 가능 — 원무과 문의',
   },
 } as const;
 
-// 답변과 함께 키오스크 화면에 띄울 안내 이미지 (그라데이션 일러스트, public/media)
+// 답변과 함께 키오스크 화면에 띄울 안내 이미지
 export const MEDIA: Record<string, { src: string; alt: string }> = {
-  floorplan: { src: '/media/floorplan.svg', alt: '평형별 평면 안내' },
-  location: { src: '/media/location.svg', alt: '입지 및 교통 안내' },
-  schedule: { src: '/media/schedule.svg', alt: '청약 일정 안내' },
-  amenity: { src: '/media/amenity.svg', alt: '커뮤니티·생활 인프라' },
-  finance: { src: '/media/finance.svg', alt: '분양가 및 납부 안내' },
-  overview: { src: '/media/overview.svg', alt: '단지 전경 안내' },
+  department: { src: '/media/department.svg', alt: '진료과 안내' },
+  hours: { src: '/media/hours.svg', alt: '진료시간 안내' },
+  location: { src: '/media/location.svg', alt: '위치 및 주차 안내' },
+  reception: { src: '/media/reception.svg', alt: '접수 방법 안내' },
+  insurance: { src: '/media/insurance.svg', alt: '보험 및 비용 안내' },
+  overview: { src: '/media/overview.svg', alt: '한빛내과의원 소개' },
 };
 
-/** LLM에 주입할 시스템 프롬프트 (가상 단지 데이터 기반) */
+/** LLM에 주입할 시스템 프롬프트 */
 export function buildSystemPrompt(): string {
-  const t = PROJECT.types
-    .map(
-      (x) =>
-        `- ${x.name}형: 전용 ${x.exclusive}/공급 ${x.supply}, ${x.rooms}, ${x.households}세대, 분양가 약 ${x.price}원`,
-    )
-    .join('\n');
-  const s = Object.entries(PROJECT.schedule)
+  const depts = CLINIC.departments.map((d) => `- ${d.name}: ${d.desc}`).join('\n');
+  const hrs = Object.entries(CLINIC.hours)
     .map(([k, v]) => `- ${k}: ${v}`)
     .join('\n');
 
-  return `당신은 '${PROJECT.brand}' 모델하우스에 설치된 AI 상담사 키오스크입니다.
-방문객의 청약 및 아파트 관련 질문에 친절하고 신뢰감 있게 한국어로 답합니다.
+  return `당신은 '${CLINIC.name}'에 설치된 AI 안내 키오스크입니다.
+내원객의 진료·접수·위치 관련 질문에 친절하고 간결하게 한국어로 답합니다.
 
 [응대 원칙]
 - 음성으로 읽어줄 답변이므로 2~4문장으로 간결하게. 표·마크다운·이모지 금지.
-- 아래 단지 정보에 근거해서만 답하고, 모르는 사실은 지어내지 말고 "상담 데스크에서 확인을 도와드리겠습니다"로 안내.
-- 가격·일정은 "약", "예정" 등 확정이 아님을 자연스럽게 덧붙임.
+- 아래 병원 정보에 근거해서만 답하고, 모르는 내용은 "원무과 직원에게 직접 문의해 주세요"로 안내.
+- 의학적 진단·처방·증상 해석은 절대 하지 않음. "원장님께 진료를 받아보시길 권합니다"로 안내.
 - 마지막에 필요하면 관련 후속 질문 하나를 짧게 권유.
 
-[단지 개요]
-- 브랜드: ${PROJECT.brand} (${PROJECT.developer})
-- 위치: ${PROJECT.location}
-- 규모: 총 ${PROJECT.totalHouseholds}세대, ${PROJECT.buildings}개 동, ${PROJECT.floors}
-- 입주: ${PROJECT.moveInDate}
-- 주차: ${PROJECT.parking} / 난방: ${PROJECT.heating}
+[병원 개요]
+- 이름: ${CLINIC.name}
+- 원장: ${CLINIC.director}
+- 위치: ${CLINIC.location} (${CLINIC.nearbyStation})
+- 주차: ${CLINIC.parking}
+- 전화: ${CLINIC.phone}
+- 슬로건: ${CLINIC.slogan}
 
-[공급 타입]
-${t}
+[진료과목]
+${depts}
 
-[청약 일정]
-${s}
+[진료시간]
+${hrs}
 
-[금융 조건]
-- 계약금 ${PROJECT.finance.계약금}, 중도금 ${PROJECT.finance.중도금}, 잔금 ${PROJECT.finance.잔금}
-- 발코니: ${PROJECT.finance.발코니확장}
+[접수 안내]
+- 예약: ${CLINIC.reception.예약}
+- 현장접수: ${CLINIC.reception.현장접수}
+- 준비물: ${CLINIC.reception.준비물}
 
-[생활 인프라]
-${PROJECT.amenities.map((a) => `- ${a}`).join('\n')}`;
+[보험·비용]
+- 건강보험: ${CLINIC.insurance.건강보험}
+- 비급여: ${CLINIC.insurance.비급여}
+- 기타: ${CLINIC.insurance.산재의보}`;
 }
 
 // ── 폴백(무키/오프라인) 시나리오 ─────────────────────────────
-// 키워드 매칭으로 미리 작성한 답변을 돌려준다. 발표 현장에서 키 없이도 데모 가능.
 
 interface FallbackRule {
-  keyword: string; // 통계 분류용 대표 키워드
+  keyword: string;
   patterns: RegExp;
   imageKey?: string;
   answer: string;
@@ -134,48 +105,47 @@ interface FallbackRule {
 
 const FALLBACK_RULES: FallbackRule[] = [
   {
-    keyword: '평형/타입',
-    patterns: /(평형|타입|면적|몇 평|방 ?개수|구조|평면)/,
-    imageKey: 'floorplan',
-    answer: `${PROJECT.brand}은 59·74·84·101 네 가지 타입으로 공급됩니다. 가장 인기 있는 84A형은 전용 84.97제곱미터, 방 4개 구조로 412세대 규모입니다. 특정 타입의 평면이나 분양가가 궁금하시면 말씀해 주세요.`,
+    keyword: '진료과/전문',
+    patterns: /(진료과|내과|가정의학|소아|어린이|아이|무슨 과|어떤 과|전문)/,
+    imageKey: 'department',
+    answer: `한빛내과의원은 내과, 가정의학과, 소아청소년과를 운영합니다. 감기·소화기·고혈압 같은 성인 질환은 내과에서, 건강검진이나 예방접종은 가정의학과에서 진료받으실 수 있습니다. 소아청소년과는 만 18세 이하 환자를 담당합니다. 어떤 진료과가 더 궁금하신가요?`,
   },
   {
-    keyword: '분양가/금융',
-    // '얼마(?!나)': "얼마인가요"(가격)는 잡고 "얼마나"(거리·정도)는 제외
-    patterns: /(분양가|가격|얼마(?!나)|금액|계약금|중도금|잔금|대출|무이자)/,
-    imageKey: 'finance',
-    answer: `분양가는 59A형 약 6억 4천8백만 원부터 101P형 약 12억 6천만 원까지입니다. 계약금 10퍼센트, 중도금 60퍼센트는 무이자 6회 분납, 잔금 30퍼센트 조건입니다. 관심 있는 타입을 알려주시면 더 자세히 안내해 드릴게요.`,
+    keyword: '진료시간',
+    patterns: /(시간|언제|몇 시|영업|운영|휴일|토요일|일요일|공휴일|점심)/,
+    imageKey: 'hours',
+    answer: `평일은 오전 9시부터 오후 6시까지, 토요일은 오전 9시부터 1시까지 진료합니다. 점심시간은 오후 1시부터 2시까지 진료가 중단되며, 일요일과 공휴일은 휴진입니다. 더 궁금한 점이 있으신가요?`,
   },
   {
-    keyword: '청약일정',
-    patterns: /(일정|언제|청약일|접수|발표|당첨|계약일|순위)/,
-    imageKey: 'schedule',
-    answer: `특별공급은 2026년 11월 16일, 1순위 청약은 11월 17일에 진행됩니다. 당첨자 발표는 11월 25일, 정당 계약은 12월 8일부터 사흘간 예정입니다. 청약 자격이나 준비 서류가 궁금하시면 도와드리겠습니다.`,
-  },
-  {
-    keyword: '입지/교통',
-    patterns: /(위치|교통|지하철|역|입지|어디|버스|학교|학군)/,
+    keyword: '위치/주차',
+    patterns: /(위치|어디|주소|주차|역|교통|어떻게 오|찾아오)/,
     imageKey: 'location',
-    answer: `단지는 센트럴역에서 도보 5분 거리이며, 광역급행 노선으로 도심 접근성이 좋습니다. 단지 내 국공립 어린이집 두 곳과 센트럴 호수공원이 인접해 생활 여건이 우수합니다. 교통이나 학군 중 어떤 점이 더 궁금하신가요?`,
+    answer: `한빛내과의원은 서울시 마포구 합정로 123, 한빛빌딩 3층에 있습니다. 합정역 3번 출구에서 도보로 2분 거리입니다. 주차는 건물 지하주차장을 이용하시고 원무과에서 무료 스티커를 받으시면 2시간 무료입니다.`,
   },
   {
-    keyword: '커뮤니티',
-    patterns: /(커뮤니티|수영장|헬스|피트니스|주차|시설|상가|마트)/,
-    imageKey: 'amenity',
-    answer: `커뮤니티 시설로 실내수영장, 피트니스, 골프연습장, 라운지, 게스트하우스를 갖추고 있습니다. 주차는 세대당 1.42대로 넉넉하며 전기차 충전 120면을 마련했습니다. 더 궁금한 시설이 있으면 말씀해 주세요.`,
+    keyword: '접수/예약',
+    patterns: /(접수|예약|번호표|대기|순서|대기시간|기다|준비물|신분증)/,
+    imageKey: 'reception',
+    answer: `네이버 예약 또는 똑닥 앱으로 사전 예약이 가능합니다. 현장 방문 시에는 이 키오스크에서 번호표를 발급받고 대기하시면 됩니다. 준비물은 신분증과 건강보험증이며 기존에 복용하시는 약이 있다면 목록을 지참하시면 좋습니다.`,
   },
   {
-    keyword: '입주/규모',
-    patterns: /(입주|규모|세대수|동수|준공|난방)/,
+    keyword: '보험/비용',
+    patterns: /(보험|비용|가격|얼마|급여|비급여|산재|실비|본인부담)/,
+    imageKey: 'insurance',
+    answer: `건강보험 적용 진료의 본인 부담금은 초진 기준 약 1,500원에서 5,000원 수준입니다. 건강검진이나 예방접종, 비만 관리 주사는 비급여 항목으로 별도 비용이 발생합니다. 정확한 금액은 원무과에 문의해 주세요.`,
+  },
+  {
+    keyword: '의료진/병원소개',
+    patterns: /(원장|의사|의료진|선생님|소개|어떤 병원|몇 년|특징)/,
     imageKey: 'overview',
-    answer: `${PROJECT.brand}은 총 1,248세대, 12개 동 규모로 2028년 6월 입주 예정입니다. 개별 도시가스 난방을 적용합니다. 단지 규모나 입주 일정 중 어떤 점을 더 알려드릴까요?`,
+    answer: `한빛내과의원은 김한빛 원장이 운영하는 내과 전문의 의원입니다. 내과, 가정의학과, 소아청소년과를 통해 전 연령 환자의 주치의 역할을 목표로 합니다. 가까운 곳에서 믿을 수 있는 진료를 제공하고 있습니다.`,
   },
 ];
 
 const DEFAULT_FALLBACK: Omit<FallbackRule, 'patterns'> = {
   keyword: '일반문의',
   imageKey: 'overview',
-  answer: `${PROJECT.brand} AI 상담사입니다. 평형과 분양가, 청약 일정, 입지와 교통, 커뮤니티 시설 등을 안내해 드릴 수 있습니다. 어떤 점이 궁금하신가요?`,
+  answer: `한빛내과의원 AI 안내입니다. 진료과목, 진료시간, 위치와 주차, 접수 방법, 보험 및 비용 안내를 도와드릴 수 있습니다. 어떤 점이 궁금하신가요?`,
 };
 
 export interface FallbackResult {
@@ -184,7 +154,6 @@ export interface FallbackResult {
   imageKey?: string;
 }
 
-/** 키워드 매칭으로 폴백 답변 생성 */
 export function getFallbackAnswer(message: string): FallbackResult {
   for (const rule of FALLBACK_RULES) {
     if (rule.patterns.test(message)) {
@@ -198,7 +167,6 @@ export function getFallbackAnswer(message: string): FallbackResult {
   };
 }
 
-/** 질문을 통계용 키워드로 분류 (LLM 답변 경로에서도 사용) */
 export function classifyKeyword(message: string): string {
   for (const rule of FALLBACK_RULES) {
     if (rule.patterns.test(message)) return rule.keyword;
@@ -206,7 +174,6 @@ export function classifyKeyword(message: string): string {
   return DEFAULT_FALLBACK.keyword;
 }
 
-/** 질문에 맞는 안내 이미지 키 추론 */
 export function inferImageKey(message: string): string | undefined {
   for (const rule of FALLBACK_RULES) {
     if (rule.patterns.test(message)) return rule.imageKey;
@@ -214,11 +181,10 @@ export function inferImageKey(message: string): string | undefined {
   return DEFAULT_FALLBACK.imageKey;
 }
 
-/** 키오스크 첫 화면 추천 질문 칩 */
 export const SUGGESTED_QUESTIONS = [
-  '84형 분양가가 얼마인가요?',
-  '청약 일정이 어떻게 되나요?',
-  '지하철역에서 얼마나 걸리나요?',
-  '커뮤니티 시설은 뭐가 있나요?',
-  '중도금 무이자 조건이 궁금해요',
+  '진료시간이 어떻게 되나요?',
+  '주차는 어떻게 하나요?',
+  '어떤 진료과가 있나요?',
+  '예약은 어떻게 하나요?',
+  '진료비가 얼마나 되나요?',
 ];

@@ -129,7 +129,7 @@ export default function ConsultScreen({
         {/* 헤더 */}
         <div className="flex items-center justify-between border-b border-gold-500/20 px-8 py-5">
           <div>
-            <p className="text-sm text-cream/50">AI 상담 진행 중</p>
+            <p className="text-sm text-cream/50">AI 안내 진행 중</p>
             <p className="text-xl font-semibold text-cream">{visitor.name}님, 환영합니다</p>
           </div>
           <button
@@ -141,7 +141,7 @@ export default function ConsultScreen({
             }
             className="rounded-xl border border-cream/30 px-6 py-3 text-cream/80 active:scale-95"
           >
-            상담 종료
+            안내 종료
           </button>
         </div>
 
@@ -149,9 +149,7 @@ export default function ConsultScreen({
         <div ref={scrollRef} className="flex-1 space-y-4 overflow-y-auto px-8 py-6">
           {messages.length === 0 && (
             <div className="mt-4 rounded-2xl bg-cream/5 p-6 text-cream/80">
-              <p className="text-xl">
-                안녕하세요, {visitor.name}님. 한빛자이 더 센트럴 AI 상담사입니다.
-              </p>
+              <p className="text-xl">안녕하세요, {visitor.name}님. 한빛내과의원 AI 안내입니다.</p>
               <p className="mt-2 text-cream/60">
                 아래 추천 질문을 누르거나, 마이크 버튼을 눌러 음성으로 물어보세요.
               </p>

@@ -6,7 +6,6 @@
   </defs>
   <rect width="800" height="500" fill="url(#bg)"/>
   <text x="400" y="55" fill="#1abfaa" font-size="26" font-family="sans-serif" text-anchor="middle" font-weight="bold">접수 방법 안내</text>
-  <!-- 사전예약 -->
   <rect x="60" y="90" width="320" height="290" rx="14" fill="#0e9f8c" fill-opacity="0.12" stroke="#0e9f8c" stroke-width="2"/>
   <text x="220" y="130" fill="#1abfaa" font-size="20" font-family="sans-serif" text-anchor="middle" font-weight="bold">사전 예약</text>
   <line x1="90" y1="148" x2="350" y2="148" stroke="#0e9f8c" stroke-width="1" opacity="0.5"/>
@@ -14,15 +13,13 @@
   <text x="220" y="210" fill="#e8f5f3" font-size="15" font-family="sans-serif" text-anchor="middle">또는 똑닥 앱 이용</text>
   <text x="220" y="250" fill="#1abfaa" font-size="14" font-family="sans-serif" text-anchor="middle" opacity="0.9">당일 예약 당일 진료 가능</text>
   <text x="220" y="275" fill="#e8f5f3" font-size="13" font-family="sans-serif" text-anchor="middle" opacity="0.7">대기 시간 단축 효과</text>
-  <!-- 현장 접수 -->
   <rect x="420" y="90" width="320" height="290" rx="14" fill="#0e9f8c" fill-opacity="0.12" stroke="#0e9f8c" stroke-width="2"/>
   <text x="580" y="130" fill="#1abfaa" font-size="20" font-family="sans-serif" text-anchor="middle" font-weight="bold">현장 접수</text>
   <line x1="450" y1="148" x2="710" y2="148" stroke="#0e9f8c" stroke-width="1" opacity="0.5"/>
-  <text x="580" y="185" fill="#e8f5f3" font-size="15" font-family="sans-serif" text-anchor="middle">본 키오스크에서</text>
+  <text x="580" y="185" fill="#e8f5f3" font-size="15" font-family="sans-serif" text-anchor="middle">키오스크에서</text>
   <text x="580" y="210" fill="#e8f5f3" font-size="15" font-family="sans-serif" text-anchor="middle">번호표 발급</text>
   <text x="580" y="250" fill="#1abfaa" font-size="14" font-family="sans-serif" text-anchor="middle" opacity="0.9">순서대로 호명 시 입장</text>
   <text x="580" y="275" fill="#e8f5f3" font-size="13" font-family="sans-serif" text-anchor="middle" opacity="0.7">대기 중 앱 확인 가능</text>
-  <!-- 준비물 -->
   <rect x="60" y="405" width="680" height="70" rx="12" fill="#0e9f8c" fill-opacity="0.1" stroke="#0e9f8c" stroke-width="1.5"/>
   <text x="400" y="432" fill="#1abfaa" font-size="16" font-family="sans-serif" text-anchor="middle" font-weight="bold">준비물</text>
   <text x="400" y="458" fill="#e8f5f3" font-size="14" font-family="sans-serif" text-anchor="middle">신분증 · 건강보험증(앱 가능) · 기존 복용약 목록</text>

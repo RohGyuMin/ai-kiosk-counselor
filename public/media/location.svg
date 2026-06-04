@@ -1,13 +1,37 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 500" width="800" height="500">
-  <defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#1b2f6e"/><stop offset="1" stop-color="#0b1733"/></linearGradient></defs>
-  <rect width="800" height="500" fill="url(#g)"/>
-  <text x="400" y="60" fill="#d8bd85" font-size="34" font-family="serif" text-anchor="middle">입지 · 교통 안내</text>
-  <g stroke="#c8a86a" stroke-width="4" fill="none" stroke-linecap="round">
-    <path d="M120 360 Q300 200 460 300 T700 240"/>
-  </g>
-  <g fill="#d8bd85"><circle cx="120" cy="360" r="12"/><circle cx="460" cy="300" r="12"/><circle cx="700" cy="240" r="14"/></g>
-  <text x="120" y="400" fill="#f6f1e7" font-size="18" text-anchor="middle" font-family="sans-serif">단지</text>
-  <text x="460" y="340" fill="#f6f1e7" font-size="18" text-anchor="middle" font-family="sans-serif">호수공원</text>
-  <text x="700" y="280" fill="#f6f1e7" font-size="18" text-anchor="middle" font-family="sans-serif">센트럴역</text>
-  <text x="400" y="460" fill="#f6f1e7" font-size="20" text-anchor="middle" font-family="sans-serif" opacity="0.8">센트럴역 도보 5분 · GTX 환승</text>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#0f3460"/><stop offset="1" stop-color="#0d2137"/>
+    </linearGradient>
+  </defs>
+  <rect width="800" height="500" fill="url(#bg)"/>
+  <text x="400" y="55" fill="#1abfaa" font-size="26" font-family="sans-serif" text-anchor="middle" font-weight="bold">위치 및 주차 안내</text>
+  <!-- 지도 배경 -->
+  <rect x="60" y="80" width="480" height="320" rx="12" fill="#0e9f8c" fill-opacity="0.08" stroke="#0e9f8c" stroke-width="2"/>
+  <!-- 도로 -->
+  <rect x="60" y="205" width="480" height="28" fill="#1abfaa" fill-opacity="0.12"/>
+  <rect x="225" y="80" width="28" height="320" fill="#1abfaa" fill-opacity="0.12"/>
+  <!-- 지하철역 -->
+  <circle cx="239" cy="219" r="22" fill="#0e9f8c" fill-opacity="0.5" stroke="#1abfaa" stroke-width="2"/>
+  <text x="239" y="224" fill="#e8f5f3" font-size="11" font-family="sans-serif" text-anchor="middle" font-weight="bold">합정역</text>
+  <!-- 병원 핀 -->
+  <circle cx="360" cy="175" r="20" fill="#1abfaa"/>
+  <text x="360" y="182" fill="#0d2137" font-size="18" font-family="sans-serif" text-anchor="middle" font-weight="bold">+</text>
+  <text x="360" y="152" fill="#1abfaa" font-size="13" font-family="sans-serif" text-anchor="middle" font-weight="bold">한빛내과의원</text>
+  <!-- 도보 경로 -->
+  <line x1="255" y1="207" x2="342" y2="178" stroke="#1abfaa" stroke-width="2.5" stroke-dasharray="6,4"/>
+  <text x="290" y="188" fill="#e8f5f3" font-size="11" font-family="sans-serif" text-anchor="middle" opacity="0.9">도보 2분</text>
+  <!-- 정보 패널 -->
+  <rect x="580" y="80" width="165" height="320" rx="12" fill="#0e9f8c" fill-opacity="0.1" stroke="#0e9f8c" stroke-width="1.5"/>
+  <text x="663" y="118" fill="#1abfaa" font-size="16" font-family="sans-serif" text-anchor="middle" font-weight="bold">찾아오는 길</text>
+  <text x="663" y="148" fill="#e8f5f3" font-size="13" font-family="sans-serif" text-anchor="middle">마포구 합정로 123</text>
+  <text x="663" y="168" fill="#e8f5f3" font-size="13" font-family="sans-serif" text-anchor="middle">한빛빌딩 3층</text>
+  <line x1="598" y1="188" x2="728" y2="188" stroke="#0e9f8c" stroke-width="1" opacity="0.5"/>
+  <text x="663" y="215" fill="#1abfaa" font-size="14" font-family="sans-serif" text-anchor="middle" font-weight="bold">주차 안내</text>
+  <text x="663" y="240" fill="#e8f5f3" font-size="13" font-family="sans-serif" text-anchor="middle">건물 지하주차장</text>
+  <text x="663" y="262" fill="#e8f5f3" font-size="13" font-family="sans-serif" text-anchor="middle">2시간 무료</text>
+  <text x="663" y="286" fill="#1abfaa" font-size="11" font-family="sans-serif" text-anchor="middle" opacity="0.8">(원무과 스티커)</text>
+  <text x="663" y="330" fill="#1abfaa" font-size="13" font-family="sans-serif" text-anchor="middle" font-weight="bold">전화</text>
+  <text x="663" y="352" fill="#e8f5f3" font-size="13" font-family="sans-serif" text-anchor="middle">02-123-4567</text>
+  <text x="400" y="450" fill="#e8f5f3" font-size="15" text-anchor="middle" font-family="sans-serif" opacity="0.7">합정역 3번 출구 도보 2분</text>
 </svg>

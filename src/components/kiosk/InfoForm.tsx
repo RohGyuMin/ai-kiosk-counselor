@@ -58,9 +58,9 @@ export default function InfoForm({
     <div className="flex h-full w-full bg-gradient-to-br from-navy-800 to-navy-900">
       {/* 좌측: 입력 폼 */}
       <div className="flex w-1/2 flex-col justify-center px-16">
-        <h2 className="font-serif-display text-4xl font-bold text-gold-400">상담 정보 입력</h2>
+        <h2 className="font-serif-display text-4xl font-bold text-gold-400">내원 정보 입력</h2>
         <p className="mt-3 text-lg text-cream/60">
-          맞춤 상담을 위해 성함과 연락처를 입력해 주세요.
+          맞춤 안내를 위해 성함과 연락처를 입력해 주세요.
         </p>
 
         <label className="mt-10 block text-lg text-cream/80">성함</label>
@@ -85,7 +85,7 @@ export default function InfoForm({
             className="h-6 w-6 accent-gold-500"
           />
           <span className="text-base">
-            개인정보 수집·이용에 동의합니다. (상담 품질 향상 및 분양 안내 목적)
+            개인정보 수집·이용에 동의합니다. (진료 안내 및 예약 확인 목적)
           </span>
         </label>
 
@@ -103,7 +103,7 @@ export default function InfoForm({
             disabled={!valid || submitting}
             className="flex-1 rounded-xl bg-gold-500 px-8 py-4 text-xl font-bold text-navy-900 transition active:scale-95 disabled:opacity-40"
           >
-            {submitting ? '상담 준비 중…' : '상담 시작하기'}
+            {submitting ? '안내 준비 중…' : '안내 시작하기'}
           </button>
         </div>
       </div>

@@ -14,8 +14,8 @@ const geistMono = localFont({
 });
 
 export const metadata: Metadata = {
-  title: '한빛자이 더 센트럴 · AI 상담 키오스크',
-  description: '모델하우스 방문객 맞춤형 AI 상담사 키오스크 데모',
+  title: '한빛내과의원 · AI 안내 키오스크',
+  description: '병원 방문객 맞춤형 AI 안내 키오스크 데모',
 };
 
 export default function RootLayout({
