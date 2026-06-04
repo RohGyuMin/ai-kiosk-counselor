@@ -35,7 +35,7 @@ export default function SummaryScreen({
           </svg>
         </div>
         <h2 className="font-serif-display mt-8 text-5xl font-bold text-cream">
-          {name}님, 상담해 주셔서 감사합니다
+          {name}님, 안내해 드려서 감사합니다
         </h2>
         <p className="mt-4 text-xl text-cream/60">
           총 {summary.questionCount}개의 질문에 답변해 드렸습니다.
@@ -55,7 +55,7 @@ export default function SummaryScreen({
         )}
 
         <p className="mt-10 text-lg text-cream/50">
-          자세한 상담은 모델하우스 상담 데스크에서 도와드리겠습니다.
+          추가 문의는 원무과 직원이나 전화(02-123-4567)로 도와드리겠습니다.
         </p>
 
         <button

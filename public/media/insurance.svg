@@ -6,23 +6,19 @@
   </defs>
   <rect width="800" height="500" fill="url(#bg)"/>
   <text x="400" y="55" fill="#1abfaa" font-size="26" font-family="sans-serif" text-anchor="middle" font-weight="bold">보험 및 비용 안내</text>
-  <!-- 건강보험 -->
   <rect x="60" y="90" width="320" height="160" rx="14" fill="#0e9f8c" fill-opacity="0.15" stroke="#0e9f8c" stroke-width="2"/>
   <text x="220" y="128" fill="#1abfaa" font-size="18" font-family="sans-serif" text-anchor="middle" font-weight="bold">건강보험 적용</text>
   <text x="220" y="162" fill="#e8f5f3" font-size="14" font-family="sans-serif" text-anchor="middle">초진 본인부담 약 1,500 – 5,000원</text>
   <text x="220" y="188" fill="#e8f5f3" font-size="14" font-family="sans-serif" text-anchor="middle">재진은 더 저렴</text>
   <text x="220" y="230" fill="#1abfaa" font-size="13" font-family="sans-serif" text-anchor="middle" opacity="0.8">건강보험증 앱으로 대체 가능</text>
-  <!-- 비급여 -->
   <rect x="420" y="90" width="320" height="160" rx="14" fill="#0e9f8c" fill-opacity="0.12" stroke="#0e9f8c" stroke-width="1.5"/>
   <text x="580" y="128" fill="#1abfaa" font-size="18" font-family="sans-serif" text-anchor="middle" font-weight="bold">비급여 항목</text>
   <text x="580" y="162" fill="#e8f5f3" font-size="14" font-family="sans-serif" text-anchor="middle">건강검진 · 예방접종</text>
   <text x="580" y="188" fill="#e8f5f3" font-size="14" font-family="sans-serif" text-anchor="middle">비만 관리 · 미용 주사</text>
   <text x="580" y="230" fill="#1abfaa" font-size="13" font-family="sans-serif" text-anchor="middle" opacity="0.8">비용은 원무과 문의</text>
-  <!-- 산재/자동차 -->
   <rect x="60" y="275" width="680" height="100" rx="14" fill="#0e9f8c" fill-opacity="0.1" stroke="#0e9f8c" stroke-width="1.5"/>
   <text x="400" y="313" fill="#1abfaa" font-size="18" font-family="sans-serif" text-anchor="middle" font-weight="bold">산재 · 자동차보험</text>
   <text x="400" y="348" fill="#e8f5f3" font-size="14" font-family="sans-serif" text-anchor="middle">산재보험 및 자동차보험 진료 가능 — 원무과 직원에게 문의해 주세요</text>
-  <!-- 실비보험 -->
   <rect x="60" y="395" width="680" height="75" rx="12" fill="#0e9f8c" fill-opacity="0.08" stroke="#0e9f8c" stroke-width="1"/>
   <text x="400" y="428" fill="#1abfaa" font-size="15" font-family="sans-serif" text-anchor="middle" font-weight="bold">실손보험 청구</text>
   <text x="400" y="453" fill="#e8f5f3" font-size="13" font-family="sans-serif" text-anchor="middle" opacity="0.8">진료 후 영수증 · 진단서 발급 가능 (원무과 안내)</text>
