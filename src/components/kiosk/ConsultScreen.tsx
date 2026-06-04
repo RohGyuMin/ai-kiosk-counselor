@@ -142,8 +142,22 @@ export default function ConsultScreen({
         {/* 헤더 */}
         <div className="flex items-center justify-between gap-3 border-b border-gold-500/20 px-4 py-3 sm:px-8 sm:py-5">
           <div className="min-w-0">
-            <p className="text-xs text-cream/50 sm:text-sm">AI 안내 진행 중</p>
-            <p className="truncate text-base font-semibold text-cream sm:text-xl">
+            <div className="flex items-center gap-2">
+              {/* 상태 점: 음성 재생 중(골드) / 듣는 중(빨강) / 대기(녹색) */}
+              <span
+                className={`inline-block h-2 w-2 rounded-full ${
+                  speaking
+                    ? 'animate-pulse bg-gold-400'
+                    : listening
+                      ? 'animate-pulse bg-red-400'
+                      : 'bg-emerald-400'
+                }`}
+              />
+              <p className="text-xs text-cream/60 sm:text-sm">
+                {speaking ? '안내 중' : listening ? '듣는 중' : '대기 중'}
+              </p>
+            </div>
+            <p className="mt-0.5 truncate text-base font-semibold text-cream sm:text-xl">
               {visitor.name}님, 환영합니다
             </p>
           </div>
@@ -193,8 +207,22 @@ export default function ConsultScreen({
           ))}
           {loading && (
             <div className="flex justify-start">
-              <div className="rounded-2xl bg-cream/10 px-4 py-3 text-sm text-cream/60 sm:px-5 sm:py-4 sm:text-base">
-                답변 생성 중…
+              <div
+                className="flex items-center gap-1.5 rounded-2xl bg-cream/10 px-5 py-4 sm:px-6 sm:py-4"
+                aria-label="답변 생성 중"
+              >
+                <span
+                  className="typing-dot inline-block h-2 w-2 rounded-full bg-cream/70"
+                  style={{ animationDelay: '0ms' }}
+                />
+                <span
+                  className="typing-dot inline-block h-2 w-2 rounded-full bg-cream/70"
+                  style={{ animationDelay: '160ms' }}
+                />
+                <span
+                  className="typing-dot inline-block h-2 w-2 rounded-full bg-cream/70"
+                  style={{ animationDelay: '320ms' }}
+                />
               </div>
             </div>
           )}
