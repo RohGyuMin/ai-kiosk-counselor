@@ -28,6 +28,7 @@ export default function ConsultScreen({
     stopListening,
     speak,
     stopSpeaking,
+    unlockAudio,
   } = useSpeech();
   const [messages, setMessages] = useState<DisplayMessage[]>([]);
   const [input, setInput] = useState('');
@@ -39,6 +40,12 @@ export default function ConsultScreen({
   useEffect(() => {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: 'smooth' });
   }, [messages, loading]);
+
+  // 상담 화면 진입 직후 한 번: 모바일 오디오 자동재생 정책 잠금 해제
+  // (InfoForm "안내 시작하기" 클릭 제스처 컨텍스트가 살아있는 동안 호출)
+  useEffect(() => {
+    unlockAudio();
+  }, [unlockAudio]);
 
   const ask = useCallback(
     async (question: string) => {
@@ -64,14 +71,12 @@ export default function ConsultScreen({
         if (data.keyword) topicsRef.current.add(data.keyword);
         void speak(data.answer); // 서버(Gemini) TTS → 실패 시 브라우저 음성 자동 폴백
       } catch {
+        const errMsg = '죄송합니다. 잠시 후 다시 시도해 주세요.';
         setMessages((prev) => [
           ...prev,
-          {
-            role: 'assistant',
-            content: '죄송합니다. 잠시 후 다시 시도해 주세요.',
-            source: 'fallback',
-          },
+          { role: 'assistant', content: errMsg, source: 'fallback' },
         ]);
+        void speak(errMsg); // 에러 상황에서도 음성은 출력 (사용자가 침묵을 보지 않도록)
       } finally {
         setLoading(false);
       }

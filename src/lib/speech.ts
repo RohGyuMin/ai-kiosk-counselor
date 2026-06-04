@@ -47,6 +47,29 @@ export function useSpeech() {
   const audioRef = useRef<HTMLAudioElement | null>(null);
   // 재생 세대 토큰: 새 speak가 시작되면 증가시켜, 진행 중이던 이전 요청을 무효화한다.
   const playTokenRef = useRef(0);
+  // iOS/모바일은 첫 사용자 제스처 직후가 아니면 audio.play()를 차단한다.
+  // 첫 인터랙션 시 무음 오디오를 한 번 재생해 정책을 "잠금 해제"한다.
+  const unlockedRef = useRef(false);
+  const unlockAudio = useCallback(() => {
+    if (unlockedRef.current) return;
+    unlockedRef.current = true;
+    try {
+      // 1프레임짜리 무음 WAV (44바이트 헤더 + 0바이트 데이터)
+      const silentWav =
+        'data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQAAAAA=';
+      const a = new Audio(silentWav);
+      a.muted = true;
+      void a.play().catch(() => {});
+      // 브라우저 TTS도 모바일에서 첫 제스처 컨텍스트가 필요할 수 있어 미리 깨운다
+      if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
+        const warm = new SpeechSynthesisUtterance(' ');
+        warm.volume = 0;
+        window.speechSynthesis.speak(warm);
+      }
+    } catch {
+      /* 무시 — 폴백은 speak에서 처리 */
+    }
+  }, []);
 
   // 재생 중인 서버 TTS 오디오 중단 (진행 중이던 speak도 무효화)
   const stopAudio = useCallback(() => {
@@ -138,6 +161,7 @@ export function useSpeech() {
    */
   const speak = useCallback(
     async (text: string) => {
+      unlockAudio(); // 모바일 자동재생 정책 우회 (no-op if already unlocked)
       stopAudio(); // 이전 재생 중단 + 토큰 증가
       if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
         window.speechSynthesis.cancel();
@@ -181,7 +205,7 @@ export function useSpeech() {
         if (myToken === playTokenRef.current) speakBrowser(text);
       }
     },
-    [stopAudio, speakBrowser],
+    [unlockAudio, stopAudio, speakBrowser],
   );
 
   const stopSpeaking = useCallback(() => {
@@ -201,5 +225,6 @@ export function useSpeech() {
     stopListening,
     speak,
     stopSpeaking,
+    unlockAudio,
   };
 }

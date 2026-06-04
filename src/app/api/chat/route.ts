@@ -15,11 +15,16 @@ export async function POST(req: NextRequest) {
 
     const result = await generateAnswer(message.trim(), history || []);
 
-    // 기록 (세션이 있을 때만)
+    // 기록은 best-effort: 세션이 없거나 FK 위반(데이터 휘발 등)이 나도 답변은 정상 반환한다.
+    // (Cloud Run에서 컨테이너 재시작 시 SQLite가 초기화돼 옛 sessionId가 사라질 수 있다)
     if (sessionId) {
-      addMessage(sessionId, 'user', message.trim());
-      addMessage(sessionId, 'assistant', result.answer, result.source);
-      if (result.keyword) addEvent(sessionId, result.keyword);
+      try {
+        addMessage(sessionId, 'user', message.trim());
+        addMessage(sessionId, 'assistant', result.answer, result.source);
+        if (result.keyword) addEvent(sessionId, result.keyword);
+      } catch (logErr) {
+        console.warn('[chat] 기록 실패(답변은 정상 반환):', logErr);
+      }
     }
 
     return NextResponse.json(result);
