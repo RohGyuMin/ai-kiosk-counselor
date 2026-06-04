@@ -55,68 +55,72 @@ export default function InfoForm({
   }
 
   return (
-    <div className="flex h-full w-full bg-gradient-to-br from-navy-800 to-navy-900">
-      {/* 좌측: 입력 폼 */}
-      <div className="flex w-1/2 flex-col justify-center px-16">
-        <h2 className="font-serif-display text-4xl font-bold text-gold-400">내원 정보 입력</h2>
-        <p className="mt-3 text-lg text-cream/60">
+    <div className="flex h-full w-full flex-col overflow-y-auto bg-gradient-to-br from-navy-800 to-navy-900 lg:flex-row lg:overflow-hidden">
+      {/* 좌측(데스크탑) / 상단(모바일): 입력 폼 */}
+      <div className="flex flex-col justify-center px-6 py-8 sm:px-10 lg:w-1/2 lg:px-16 lg:py-0">
+        <h2 className="font-serif-display text-2xl font-bold text-gold-400 sm:text-4xl">
+          내원 정보 입력
+        </h2>
+        <p className="mt-2 text-sm text-cream/60 sm:mt-3 sm:text-lg">
           맞춤 안내를 위해 성함과 연락처를 입력해 주세요.
         </p>
 
-        <label className="mt-10 block text-lg text-cream/80">성함</label>
+        <label className="mt-6 block text-base text-cream/80 sm:mt-10 sm:text-lg">성함</label>
         <input
           value={name}
           onChange={(e) => setName(e.target.value)}
           placeholder="홍길동"
           maxLength={20}
-          className="mt-2 w-full rounded-xl border border-gold-500/40 bg-navy-900/60 px-5 py-4 text-2xl text-cream outline-none focus:border-gold-400"
+          className="mt-2 w-full rounded-xl border border-gold-500/40 bg-navy-900/60 px-4 py-3 text-xl text-cream outline-none focus:border-gold-400 sm:px-5 sm:py-4 sm:text-2xl"
         />
 
-        <label className="mt-6 block text-lg text-cream/80">연락처</label>
-        <div className="mt-2 w-full rounded-xl border border-gold-500/40 bg-navy-900/60 px-5 py-4 text-2xl tracking-wider text-cream">
+        <label className="mt-4 block text-base text-cream/80 sm:mt-6 sm:text-lg">연락처</label>
+        <div className="mt-2 w-full rounded-xl border border-gold-500/40 bg-navy-900/60 px-4 py-3 text-xl tracking-wider text-cream sm:px-5 sm:py-4 sm:text-2xl">
           {phone ? formatPhone(phone) : <span className="text-cream/30">010-0000-0000</span>}
         </div>
 
-        <label className="mt-6 flex cursor-pointer items-center gap-3 text-cream/80">
+        <label className="mt-4 flex cursor-pointer items-start gap-3 text-cream/80 sm:mt-6 sm:items-center">
           <input
             type="checkbox"
             checked={consent}
             onChange={(e) => setConsent(e.target.checked)}
-            className="h-6 w-6 accent-gold-500"
+            className="mt-1 h-5 w-5 shrink-0 accent-gold-500 sm:mt-0 sm:h-6 sm:w-6"
           />
-          <span className="text-base">
+          <span className="text-sm sm:text-base">
             개인정보 수집·이용에 동의합니다. (진료 안내 및 예약 확인 목적)
           </span>
         </label>
 
-        {error && <p className="mt-4 text-red-300">{error}</p>}
+        {error && <p className="mt-4 text-sm text-red-300 sm:text-base">{error}</p>}
 
-        <div className="mt-8 flex gap-4">
+        <div className="mt-6 flex gap-3 sm:mt-8 sm:gap-4">
           <button
             onClick={onCancel}
-            className="rounded-xl border border-cream/30 px-8 py-4 text-xl text-cream/70 active:scale-95"
+            className="rounded-xl border border-cream/30 px-5 py-3 text-base text-cream/70 active:scale-95 sm:px-8 sm:py-4 sm:text-xl"
           >
             취소
           </button>
           <button
             onClick={submit}
             disabled={!valid || submitting}
-            className="flex-1 rounded-xl bg-gold-500 px-8 py-4 text-xl font-bold text-navy-900 transition active:scale-95 disabled:opacity-40"
+            className="flex-1 rounded-xl bg-gold-500 px-5 py-3 text-base font-bold text-navy-900 transition active:scale-95 disabled:opacity-40 sm:px-8 sm:py-4 sm:text-xl"
           >
             {submitting ? '안내 준비 중…' : '안내 시작하기'}
           </button>
         </div>
       </div>
 
-      {/* 우측: 숫자 키패드 */}
-      <div className="flex w-1/2 flex-col justify-center bg-navy-900/40 px-16">
-        <p className="mb-6 text-center text-lg text-cream/50">연락처를 입력하세요</p>
-        <div className="mx-auto grid w-full max-w-md grid-cols-3 gap-4">
+      {/* 우측(데스크탑) / 하단(모바일): 숫자 키패드 */}
+      <div className="flex flex-col justify-center bg-navy-900/40 px-4 py-6 sm:px-10 sm:py-8 lg:w-1/2 lg:px-16 lg:py-0">
+        <p className="mb-4 text-center text-sm text-cream/50 sm:mb-6 sm:text-lg">
+          연락처를 입력하세요
+        </p>
+        <div className="mx-auto grid w-full max-w-md grid-cols-3 gap-2 sm:gap-4">
           {KEYS.map((k) => (
             <button
               key={k}
               onClick={() => press(k)}
-              className={`flex h-24 items-center justify-center rounded-2xl text-3xl font-semibold transition active:scale-95 ${
+              className={`flex h-14 items-center justify-center rounded-xl text-xl font-semibold transition active:scale-95 sm:h-24 sm:rounded-2xl sm:text-3xl ${
                 k === '확인'
                   ? 'bg-gold-500 text-navy-900'
                   : k === '⌫'

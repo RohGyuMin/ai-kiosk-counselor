@@ -58,7 +58,7 @@ export default function KioskApp() {
   }, []);
 
   return (
-    <main className="kiosk-root relative h-screen w-screen overflow-hidden bg-navy-900 text-cream">
+    <main className="kiosk-root relative w-screen overflow-hidden bg-navy-900 text-cream">
       {stage === 'attract' && <AttractScreen onStart={() => setStage('info')} />}
       {stage === 'info' && <InfoForm onComplete={handleStart} onCancel={reset} />}
       {stage === 'consult' && visitor && <ConsultScreen visitor={visitor} onEnd={handleEnd} />}

@@ -127,10 +127,12 @@ export default function ConsultScreen({
       {/* 우측: 대화 */}
       <div className="flex flex-1 flex-col">
         {/* 헤더 */}
-        <div className="flex items-center justify-between border-b border-gold-500/20 px-8 py-5">
-          <div>
-            <p className="text-sm text-cream/50">AI 안내 진행 중</p>
-            <p className="text-xl font-semibold text-cream">{visitor.name}님, 환영합니다</p>
+        <div className="flex items-center justify-between gap-3 border-b border-gold-500/20 px-4 py-3 sm:px-8 sm:py-5">
+          <div className="min-w-0">
+            <p className="text-xs text-cream/50 sm:text-sm">AI 안내 진행 중</p>
+            <p className="truncate text-base font-semibold text-cream sm:text-xl">
+              {visitor.name}님, 환영합니다
+            </p>
           </div>
           <button
             onClick={() =>
@@ -139,18 +141,23 @@ export default function ConsultScreen({
                 topics: Array.from(topicsRef.current),
               })
             }
-            className="rounded-xl border border-cream/30 px-6 py-3 text-cream/80 active:scale-95"
+            className="shrink-0 rounded-lg border border-cream/30 px-3 py-2 text-sm text-cream/80 active:scale-95 sm:rounded-xl sm:px-6 sm:py-3 sm:text-base"
           >
-            안내 종료
+            종료
           </button>
         </div>
 
         {/* 메시지 */}
-        <div ref={scrollRef} className="flex-1 space-y-4 overflow-y-auto px-8 py-6">
+        <div
+          ref={scrollRef}
+          className="flex-1 space-y-3 overflow-y-auto px-4 py-4 sm:space-y-4 sm:px-8 sm:py-6"
+        >
           {messages.length === 0 && (
-            <div className="mt-4 rounded-2xl bg-cream/5 p-6 text-cream/80">
-              <p className="text-xl">안녕하세요, {visitor.name}님. 한빛내과의원 AI 안내입니다.</p>
-              <p className="mt-2 text-cream/60">
+            <div className="mt-2 rounded-2xl bg-cream/5 p-4 text-cream/80 sm:mt-4 sm:p-6">
+              <p className="text-base sm:text-xl">
+                안녕하세요, {visitor.name}님. 한빛내과의원 AI 안내입니다.
+              </p>
+              <p className="mt-2 text-sm text-cream/60 sm:text-base">
                 아래 추천 질문을 누르거나, 마이크 버튼을 눌러 음성으로 물어보세요.
               </p>
             </div>
@@ -158,7 +165,7 @@ export default function ConsultScreen({
           {messages.map((m, i) => (
             <div key={i} className={`flex ${m.role === 'user' ? 'justify-end' : 'justify-start'}`}>
               <div
-                className={`animate-fade-up max-w-[80%] rounded-2xl px-5 py-4 text-lg leading-relaxed ${
+                className={`animate-fade-up max-w-[85%] rounded-2xl px-4 py-3 text-base leading-relaxed sm:max-w-[80%] sm:px-5 sm:py-4 sm:text-lg ${
                   m.role === 'user' ? 'bg-gold-500 text-navy-900' : 'bg-cream/10 text-cream'
                 }`}
               >
@@ -173,26 +180,28 @@ export default function ConsultScreen({
           ))}
           {loading && (
             <div className="flex justify-start">
-              <div className="rounded-2xl bg-cream/10 px-5 py-4 text-cream/60">답변 생성 중…</div>
+              <div className="rounded-2xl bg-cream/10 px-4 py-3 text-sm text-cream/60 sm:px-5 sm:py-4 sm:text-base">
+                답변 생성 중…
+              </div>
             </div>
           )}
           {listening && transcript && (
             <div className="flex justify-end">
-              <div className="text-gold-200 max-w-[80%] rounded-2xl border border-gold-400/50 px-5 py-4 text-lg">
+              <div className="text-gold-200 max-w-[85%] rounded-2xl border border-gold-400/50 px-4 py-3 text-base sm:max-w-[80%] sm:px-5 sm:py-4 sm:text-lg">
                 {transcript}
               </div>
             </div>
           )}
         </div>
 
-        {/* 추천 질문 */}
-        <div className="flex flex-wrap gap-2 px-8 pb-3">
+        {/* 추천 질문 (모바일에선 가로 스크롤로 한 줄) */}
+        <div className="flex gap-2 overflow-x-auto px-4 pb-2 sm:flex-wrap sm:overflow-visible sm:px-8 sm:pb-3">
           {SUGGESTED_QUESTIONS.map((q) => (
             <button
               key={q}
               onClick={() => ask(q)}
               disabled={loading}
-              className="rounded-full border border-gold-500/40 px-4 py-2 text-sm text-cream/80 transition hover:bg-cream/10 active:scale-95 disabled:opacity-40"
+              className="shrink-0 whitespace-nowrap rounded-full border border-gold-500/40 px-3 py-1.5 text-xs text-cream/80 transition hover:bg-cream/10 active:scale-95 disabled:opacity-40 sm:px-4 sm:py-2 sm:text-sm"
             >
               {q}
             </button>
@@ -200,18 +209,17 @@ export default function ConsultScreen({
         </div>
 
         {/* 입력 바 */}
-        <div className="flex items-center gap-3 border-t border-gold-500/20 px-8 py-5">
+        <div className="flex items-center gap-2 border-t border-gold-500/20 px-4 py-3 sm:gap-3 sm:px-8 sm:py-5">
           <button
             onClick={onMic}
             disabled={!supported || loading}
             title={supported ? '음성으로 질문' : '이 브라우저는 음성 인식을 지원하지 않습니다'}
-            className={`flex h-16 w-16 shrink-0 items-center justify-center rounded-full transition active:scale-95 disabled:opacity-30 ${
+            className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-full transition active:scale-95 disabled:opacity-30 sm:h-16 sm:w-16 ${
               listening ? 'animate-pulse-ring bg-red-500 text-white' : 'bg-gold-500 text-navy-900'
             }`}
           >
             <svg
-              width="28"
-              height="28"
+              className="h-5 w-5 sm:h-7 sm:w-7"
               viewBox="0 0 24 24"
               fill="none"
               stroke="currentColor"
@@ -225,17 +233,13 @@ export default function ConsultScreen({
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={(e) => e.key === 'Enter' && ask(input)}
-            placeholder={
-              supported
-                ? '직접 입력하거나 마이크를 누르세요'
-                : '질문을 입력하세요 (음성 미지원 브라우저)'
-            }
-            className="flex-1 rounded-xl border border-gold-500/30 bg-navy-900/60 px-5 py-4 text-lg text-cream outline-none focus:border-gold-400"
+            placeholder={supported ? '입력 또는 마이크' : '질문을 입력하세요'}
+            className="min-w-0 flex-1 rounded-xl border border-gold-500/30 bg-navy-900/60 px-3 py-3 text-base text-cream outline-none focus:border-gold-400 sm:px-5 sm:py-4 sm:text-lg"
           />
           <button
             onClick={() => ask(input)}
             disabled={loading || !input.trim()}
-            className="rounded-xl bg-gold-500 px-7 py-4 text-lg font-bold text-navy-900 active:scale-95 disabled:opacity-40"
+            className="shrink-0 rounded-xl bg-gold-500 px-4 py-3 text-sm font-bold text-navy-900 active:scale-95 disabled:opacity-40 sm:px-7 sm:py-4 sm:text-lg"
           >
             전송
           </button>

@@ -45,6 +45,9 @@ body {
 .kiosk-root {
   user-select: none;
   -webkit-tap-highlight-color: transparent;
+  /* iOS Safari 동적 주소창에 대응: dvh가 있으면 그것을, 없으면 100vh */
+  height: 100vh;
+  height: 100dvh;
 }
 
 @keyframes pulse-ring {
