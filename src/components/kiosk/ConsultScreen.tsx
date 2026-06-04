@@ -36,16 +36,24 @@ export default function ConsultScreen({
   const [imageKey, setImageKey] = useState<string>('overview');
   const topicsRef = useRef<Set<string>>(new Set());
   const scrollRef = useRef<HTMLDivElement>(null);
+  // StrictMode 이중 마운트 / 재렌더에 대비한 인사 1회 가드
+  const greetedRef = useRef(false);
 
   useEffect(() => {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: 'smooth' });
   }, [messages, loading]);
 
-  // 상담 화면 진입 직후 한 번: 모바일 오디오 자동재생 정책 잠금 해제
-  // (InfoForm "안내 시작하기" 클릭 제스처 컨텍스트가 살아있는 동안 호출)
+  // 상담 화면 진입 직후 한 번:
+  // (1) 모바일 자동재생 정책 잠금 해제 (InfoForm "안내 시작하기" 제스처 컨텍스트 활용)
+  // (2) 인사 메시지를 어시스턴트 발화로 추가하고 즉시 음성 출력 → 첫 문장부터 들리도록
   useEffect(() => {
+    if (greetedRef.current) return;
+    greetedRef.current = true;
     unlockAudio();
-  }, [unlockAudio]);
+    const greeting = `안녕하세요 ${visitor.name}님, 한빛내과의원 AI 안내입니다. 진료시간, 위치, 접수 방법 등 무엇이든 물어보세요.`;
+    setMessages([{ role: 'assistant', content: greeting, source: 'llm' }]);
+    void speak(greeting);
+  }, [unlockAudio, speak, visitor.name]);
 
   const ask = useCallback(
     async (question: string) => {
