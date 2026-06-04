@@ -14,7 +14,9 @@ FROM node:22-alpine AS deps
 RUN apk add --no-cache libc6-compat
 WORKDIR /app
 COPY package.json pnpm-lock.yaml ./
-RUN corepack enable && pnpm install --frozen-lockfile
+# --ignore-scripts: pnpm 11 공급망 정책이 미승인 빌드 스크립트가 있으면 frozen-lockfile
+# 모드에서 실패시키는데, 우리 의존성은 빌드 스크립트 없이도 동작하므로 건너뛴다.
+RUN corepack enable && pnpm install --frozen-lockfile --ignore-scripts
 
 # 2) 빌드
 FROM node:22-alpine AS builder
