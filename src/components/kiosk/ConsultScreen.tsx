@@ -64,17 +64,6 @@ export default function ConsultScreen({
       const history: ChatMessage[] = messages.map((m) => ({ role: m.role, content: m.content }));
       setMessages((prev) => [...prev, { role: 'user', content: q }]);
       setLoading(true);
-      // 즉시 짧은 인터점(0지연) — 본 답변 도착까지의 갭을 가린다.
-      // 브라우저 내장 TTS로 빠르게(<200ms) 시작. 본 답변 speak()가 시작되면 자동으로 중단됨.
-      if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
-        const PROMPTS = ['네, 알려드릴게요.', '잠시만요.', '네, 안내해드리겠습니다.'];
-        const filler = PROMPTS[Math.floor(q.length % PROMPTS.length)];
-        window.speechSynthesis.cancel();
-        const utter = new SpeechSynthesisUtterance(filler);
-        utter.lang = 'ko-KR';
-        utter.rate = 1.1;
-        window.speechSynthesis.speak(utter);
-      }
       try {
         const res = await fetch('/api/chat', {
           method: 'POST',
@@ -154,18 +143,26 @@ export default function ConsultScreen({
         <div className="flex items-center justify-between gap-3 border-b border-gold-500/20 px-4 py-3 sm:px-8 sm:py-5">
           <div className="min-w-0">
             <div className="flex items-center gap-2">
-              {/* 상태 점: 음성 재생 중(골드) / 듣는 중(빨강) / 대기(녹색) */}
+              {/* 상태 점: 준비 중(골드 펄스) / 안내 중(골드) / 듣는 중(빨강) / 대기(녹색) */}
               <span
-                className={`inline-block h-2 w-2 rounded-full ${
-                  speaking
-                    ? 'animate-pulse bg-gold-400'
-                    : listening
-                      ? 'animate-pulse bg-red-400'
-                      : 'bg-emerald-400'
+                className={`inline-block h-2.5 w-2.5 rounded-full ${
+                  loading
+                    ? 'animate-pulse bg-gold-400 shadow-[0_0_8px_rgba(216,189,133,0.7)]'
+                    : speaking
+                      ? 'bg-gold-400 shadow-[0_0_8px_rgba(216,189,133,0.7)]'
+                      : listening
+                        ? 'animate-pulse bg-red-400 shadow-[0_0_8px_rgba(239,68,68,0.7)]'
+                        : 'bg-emerald-400'
                 }`}
               />
-              <p className="text-xs text-cream/60 sm:text-sm">
-                {speaking ? '안내 중' : listening ? '듣는 중' : '대기 중'}
+              <p className="text-xs font-medium text-cream/70 sm:text-sm">
+                {loading
+                  ? '답변 준비 중'
+                  : speaking
+                    ? '안내 중'
+                    : listening
+                      ? '듣는 중'
+                      : '대기 중'}
               </p>
             </div>
             <p className="mt-0.5 truncate text-base font-semibold text-cream sm:text-xl">
@@ -219,19 +216,19 @@ export default function ConsultScreen({
           {loading && (
             <div className="flex justify-start">
               <div
-                className="flex items-center gap-1.5 rounded-2xl bg-cream/10 px-5 py-4 sm:px-6 sm:py-4"
+                className="flex items-center gap-2 rounded-2xl bg-cream/10 px-5 py-4 sm:px-6 sm:py-4"
                 aria-label="답변 생성 중"
               >
                 <span
-                  className="typing-dot inline-block h-2 w-2 rounded-full bg-cream/70"
+                  className="typing-dot inline-block h-2.5 w-2.5 rounded-full bg-gold-400"
                   style={{ animationDelay: '0ms' }}
                 />
                 <span
-                  className="typing-dot inline-block h-2 w-2 rounded-full bg-cream/70"
+                  className="typing-dot inline-block h-2.5 w-2.5 rounded-full bg-gold-400"
                   style={{ animationDelay: '160ms' }}
                 />
                 <span
-                  className="typing-dot inline-block h-2 w-2 rounded-full bg-cream/70"
+                  className="typing-dot inline-block h-2.5 w-2.5 rounded-full bg-gold-400"
                   style={{ animationDelay: '320ms' }}
                 />
               </div>
