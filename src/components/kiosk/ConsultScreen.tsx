@@ -143,14 +143,10 @@ export default function ConsultScreen({
 
       {/* 좌측: AI 오브 + 동기 안내 이미지 */}
       <div className="relative z-10 hidden w-[42%] flex-col items-center justify-center border-r border-gold-500/20 p-8 lg:flex">
-        {/* AI 오브 */}
+        {/* AI 오브 — 부드러운 골드 글로우 */}
         <div className="relative mb-6 flex h-32 w-32 items-center justify-center">
-          {/* 외곽 글로우 */}
-          <div className={`absolute inset-0 rounded-full ${orbClass} opacity-50 blur-2xl`} />
-          {/* 본체 */}
-          <div className={`relative h-28 w-28 rounded-full ${orbClass} shadow-2xl`} />
-          {/* 내부 광택 */}
-          <div className="pointer-events-none absolute inset-2 rounded-full bg-gradient-to-br from-white/40 via-transparent to-transparent" />
+          <div className={`absolute inset-0 rounded-full ${orbClass} opacity-60 blur-2xl`} />
+          <div className={`relative h-24 w-24 rounded-full ${orbClass}`} />
         </div>
 
         <div
@@ -190,9 +186,8 @@ export default function ConsultScreen({
         <div className="flex items-center justify-between gap-3 border-b border-gold-500/20 px-4 py-3 sm:px-8 sm:py-5">
           {/* 미니 AI 오브 (모바일에서도 보임) */}
           <div className="relative flex h-10 w-10 shrink-0 items-center justify-center lg:hidden">
-            <div className={`absolute inset-0 rounded-full ${orbClass} opacity-50 blur-md`} />
-            <div className={`relative h-8 w-8 rounded-full ${orbClass}`} />
-            <div className="pointer-events-none absolute inset-1 rounded-full bg-gradient-to-br from-white/40 via-transparent to-transparent" />
+            <div className={`absolute inset-0 rounded-full ${orbClass} opacity-60 blur-md`} />
+            <div className={`relative h-7 w-7 rounded-full ${orbClass}`} />
           </div>
           <div className="min-w-0 flex-1">
             <div className="flex items-center gap-2">
