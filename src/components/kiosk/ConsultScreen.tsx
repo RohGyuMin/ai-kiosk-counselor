@@ -208,8 +208,8 @@ export default function ConsultScreen({
         )}
       </div>
 
-      {/* 우측: 대화 */}
-      <div className="relative z-10 flex flex-1 flex-col">
+      {/* 우측: 대화 — min-w-0 으로 flex 자식 가로 넘침 방지 */}
+      <div className="relative z-10 flex min-w-0 flex-1 flex-col">
         {/* 헤더 */}
         <div className="flex items-center justify-between gap-3 border-b border-gold-500/20 px-4 py-3 sm:px-8 sm:py-5">
           {/* 미니 엠블럼 (모바일) — 십자만, 펄스 링은 사고/발화 시에만 1개 */}
@@ -287,7 +287,7 @@ export default function ConsultScreen({
           {messages.map((m, i) => (
             <div key={i} className={`flex ${m.role === 'user' ? 'justify-end' : 'justify-start'}`}>
               <div
-                className={`animate-fade-up max-w-[85%] rounded-2xl px-4 py-3 text-base leading-relaxed sm:max-w-[80%] sm:px-5 sm:py-4 sm:text-lg ${
+                className={`animate-fade-up max-w-[80%] break-words rounded-2xl px-4 py-3 text-base leading-relaxed [overflow-wrap:anywhere] sm:px-5 sm:py-4 sm:text-lg ${
                   m.role === 'user' ? 'bg-gold-500 text-navy-900' : 'bg-cream/10 text-cream'
                 }`}
               >
@@ -323,7 +323,7 @@ export default function ConsultScreen({
           )}
           {listening && transcript && (
             <div className="flex justify-end">
-              <div className="text-gold-200 max-w-[85%] rounded-2xl border border-gold-400/50 px-4 py-3 text-base sm:max-w-[80%] sm:px-5 sm:py-4 sm:text-lg">
+              <div className="text-gold-200 max-w-[80%] break-words rounded-2xl border border-gold-400/50 px-4 py-3 text-base [overflow-wrap:anywhere] sm:px-5 sm:py-4 sm:text-lg">
                 {transcript}
               </div>
             </div>
