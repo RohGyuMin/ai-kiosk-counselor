@@ -75,7 +75,23 @@ export default function InfoForm({
         />
 
         <label className="mt-4 block text-base text-cream/80 sm:mt-6 sm:text-lg">연락처</label>
-        <div className="mt-2 w-full rounded-xl border border-gold-500/40 bg-navy-900/60 px-4 py-3 text-xl tracking-wider text-cream sm:px-5 sm:py-4 sm:text-2xl">
+        {/* 모바일: 시스템 숫자 키보드로 직접 입력 */}
+        <input
+          type="tel"
+          inputMode="numeric"
+          autoComplete="tel"
+          pattern="[0-9]*"
+          value={formatPhone(phone)}
+          onChange={(e) => {
+            const digits = e.target.value.replace(/\D/g, '').slice(0, 11);
+            setPhone(digits);
+            setError('');
+          }}
+          placeholder="010-0000-0000"
+          className="mt-2 w-full rounded-xl border border-gold-500/40 bg-navy-900/60 px-4 py-3 text-xl tracking-wider text-cream outline-none placeholder:text-cream/30 focus:border-gold-400 sm:px-5 sm:py-4 sm:text-2xl lg:hidden"
+        />
+        {/* 데스크탑·키오스크 화면(lg+): 오른쪽 큰 키패드용 표시 영역 */}
+        <div className="mt-2 hidden w-full rounded-xl border border-gold-500/40 bg-navy-900/60 px-4 py-3 text-xl tracking-wider text-cream sm:px-5 sm:py-4 sm:text-2xl lg:block">
           {phone ? formatPhone(phone) : <span className="text-cream/30">010-0000-0000</span>}
         </div>
 
@@ -110,17 +126,15 @@ export default function InfoForm({
         </div>
       </div>
 
-      {/* 우측(데스크탑) / 하단(모바일): 숫자 키패드 */}
-      <div className="flex flex-col justify-center bg-navy-900/40 px-4 py-6 sm:px-10 sm:py-8 lg:w-1/2 lg:px-16 lg:py-0">
-        <p className="mb-4 text-center text-sm text-cream/50 sm:mb-6 sm:text-lg">
-          연락처를 입력하세요
-        </p>
-        <div className="mx-auto grid w-full max-w-md grid-cols-3 gap-2 sm:gap-4">
+      {/* 키패드: 키오스크/태블릿(lg+)에서만 표시. 모바일은 시스템 숫자 키보드 사용. */}
+      <div className="hidden flex-col justify-center bg-navy-900/40 lg:flex lg:w-1/2 lg:px-16 lg:py-0">
+        <p className="mb-6 text-center text-lg text-cream/50">연락처를 입력하세요</p>
+        <div className="mx-auto grid w-full max-w-md grid-cols-3 gap-4">
           {KEYS.map((k) => (
             <button
               key={k}
               onClick={() => press(k)}
-              className={`flex h-14 items-center justify-center rounded-xl text-xl font-semibold transition active:scale-95 sm:h-24 sm:rounded-2xl sm:text-3xl ${
+              className={`flex h-24 items-center justify-center rounded-2xl text-3xl font-semibold transition active:scale-95 ${
                 k === '확인'
                   ? 'bg-gold-500 text-navy-900'
                   : k === '⌫'
