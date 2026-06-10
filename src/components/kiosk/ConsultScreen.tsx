@@ -10,6 +10,31 @@ import type { SummaryData, Visitor } from './KioskApp';
 
 interface DisplayMessage extends ChatMessage {
   source?: 'llm' | 'fallback';
+  /** 글자 스트리밍 타이핑용 — true면 마운트 시 한 글자씩 표시 */
+  stream?: boolean;
+}
+
+/** 답변 텍스트를 한 글자씩 표시 (~25ms/char) */
+function StreamedText({ text }: { text: string }) {
+  const [shown, setShown] = useState('');
+  useEffect(() => {
+    setShown('');
+    let i = 0;
+    const id = setInterval(() => {
+      i++;
+      setShown(text.slice(0, i));
+      if (i >= text.length) clearInterval(id);
+    }, 25);
+    return () => clearInterval(id);
+  }, [text]);
+  return (
+    <>
+      {shown}
+      {shown.length < text.length && (
+        <span className="ml-0.5 inline-block h-4 w-[2px] animate-pulse bg-gold-400/80 align-middle" />
+      )}
+    </>
+  );
 }
 
 export default function ConsultScreen({
@@ -73,7 +98,7 @@ export default function ConsultScreen({
         const data = (await res.json()) as ChatResponse;
         setMessages((prev) => [
           ...prev,
-          { role: 'assistant', content: data.answer, source: data.source },
+          { role: 'assistant', content: data.answer, source: data.source, stream: true },
         ]);
         if (data.imageKey && MEDIA[data.imageKey]) setImageKey(data.imageKey);
         if (data.keyword) topicsRef.current.add(data.keyword);
@@ -82,7 +107,7 @@ export default function ConsultScreen({
         const errMsg = '죄송합니다. 잠시 후 다시 시도해 주세요.';
         setMessages((prev) => [
           ...prev,
-          { role: 'assistant', content: errMsg, source: 'fallback' },
+          { role: 'assistant', content: errMsg, source: 'fallback', stream: true },
         ]);
         void speak(errMsg); // 에러 상황에서도 음성은 출력 (사용자가 침묵을 보지 않도록)
       } finally {
@@ -102,10 +127,32 @@ export default function ConsultScreen({
 
   const media = MEDIA[imageKey] ?? MEDIA.overview;
 
+  // AI 오브 상태 — loading/listening 시 "사고" 모드, speaking 시 "발화" 모드
+  const orbMode = loading || listening ? 'thinking' : speaking ? 'speaking' : 'idle';
+  const orbClass =
+    orbMode === 'thinking'
+      ? 'ai-orb ai-orb-thinking'
+      : orbMode === 'speaking'
+        ? 'ai-orb ai-orb-speaking'
+        : 'ai-orb';
+
   return (
-    <div className="flex h-full w-full bg-gradient-to-br from-navy-800 to-navy-900">
-      {/* 좌측: 동기 안내 이미지 */}
-      <div className="relative hidden w-[42%] flex-col items-center justify-center border-r border-gold-500/20 p-8 lg:flex">
+    <div className="relative flex h-full w-full bg-gradient-to-br from-navy-800 to-navy-900">
+      {/* 앰비언트 오로라 배경 */}
+      <div className="aurora" />
+
+      {/* 좌측: AI 오브 + 동기 안내 이미지 */}
+      <div className="relative z-10 hidden w-[42%] flex-col items-center justify-center border-r border-gold-500/20 p-8 lg:flex">
+        {/* AI 오브 */}
+        <div className="relative mb-6 flex h-32 w-32 items-center justify-center">
+          {/* 외곽 글로우 */}
+          <div className={`absolute inset-0 rounded-full ${orbClass} opacity-50 blur-2xl`} />
+          {/* 본체 */}
+          <div className={`relative h-28 w-28 rounded-full ${orbClass} shadow-2xl`} />
+          {/* 내부 광택 */}
+          <div className="pointer-events-none absolute inset-2 rounded-full bg-gradient-to-br from-white/40 via-transparent to-transparent" />
+        </div>
+
         <div
           className="animate-fade-up w-full overflow-hidden rounded-2xl shadow-2xl"
           key={imageKey}
@@ -138,10 +185,16 @@ export default function ConsultScreen({
       </div>
 
       {/* 우측: 대화 */}
-      <div className="flex flex-1 flex-col">
+      <div className="relative z-10 flex flex-1 flex-col">
         {/* 헤더 */}
         <div className="flex items-center justify-between gap-3 border-b border-gold-500/20 px-4 py-3 sm:px-8 sm:py-5">
-          <div className="min-w-0">
+          {/* 미니 AI 오브 (모바일에서도 보임) */}
+          <div className="relative flex h-10 w-10 shrink-0 items-center justify-center lg:hidden">
+            <div className={`absolute inset-0 rounded-full ${orbClass} opacity-50 blur-md`} />
+            <div className={`relative h-8 w-8 rounded-full ${orbClass}`} />
+            <div className="pointer-events-none absolute inset-1 rounded-full bg-gradient-to-br from-white/40 via-transparent to-transparent" />
+          </div>
+          <div className="min-w-0 flex-1">
             <div className="flex items-center gap-2">
               {/* 상태 점: 준비 중(골드 펄스) / 안내 중(골드) / 듣는 중(빨강) / 대기(녹색) */}
               <span
@@ -204,7 +257,7 @@ export default function ConsultScreen({
                   m.role === 'user' ? 'bg-gold-500 text-navy-900' : 'bg-cream/10 text-cream'
                 }`}
               >
-                {m.content}
+                {m.role === 'assistant' && m.stream ? <StreamedText text={m.content} /> : m.content}
                 {m.role === 'assistant' && m.source === 'fallback' && (
                   <span className="ml-2 align-middle text-xs text-gold-400/70">
                     · 오프라인 안내

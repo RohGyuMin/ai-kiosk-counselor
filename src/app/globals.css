@@ -89,6 +89,102 @@ body {
   }
 }
 
+/* AI 오브: 그라데이션 회전 + 호흡(scale) — Siri/Apple Intelligence 느낌 */
+@keyframes orb-spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+@keyframes orb-breathe {
+  0%,
+  100% {
+    transform: scale(1);
+    filter: blur(0px) brightness(1);
+  }
+  50% {
+    transform: scale(1.08);
+    filter: blur(0.5px) brightness(1.15);
+  }
+}
+.ai-orb {
+  background: conic-gradient(
+    from 0deg,
+    #d8bd85 0%,
+    #c8a86a 25%,
+    #1b2f6e 50%,
+    #d8bd85 75%,
+    #c8a86a 100%
+  );
+  animation:
+    orb-spin 6s linear infinite,
+    orb-breathe 3.5s ease-in-out infinite;
+}
+.ai-orb-thinking {
+  animation:
+    orb-spin 2.4s linear infinite,
+    orb-breathe 1.8s ease-in-out infinite;
+}
+.ai-orb-speaking {
+  animation:
+    orb-spin 4s linear infinite,
+    orb-breathe 2s ease-in-out infinite;
+}
+
+/* 앰비언트 오로라: 배경에서 천천히 떠다니는 큰 그라데이션 구 */
+@keyframes drift-1 {
+  0%,
+  100% {
+    transform: translate(0, 0) scale(1);
+  }
+  33% {
+    transform: translate(15%, -8%) scale(1.1);
+  }
+  66% {
+    transform: translate(-8%, 12%) scale(0.95);
+  }
+}
+@keyframes drift-2 {
+  0%,
+  100% {
+    transform: translate(0, 0) scale(1);
+  }
+  50% {
+    transform: translate(-20%, 10%) scale(1.15);
+  }
+}
+.aurora {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 0;
+}
+.aurora::before,
+.aurora::after {
+  content: '';
+  position: absolute;
+  width: 60vw;
+  height: 60vw;
+  border-radius: 9999px;
+  filter: blur(80px);
+  opacity: 0.35;
+}
+.aurora::before {
+  top: -20%;
+  left: -15%;
+  background: radial-gradient(circle, #c8a86a 0%, transparent 70%);
+  animation: drift-1 22s ease-in-out infinite;
+}
+.aurora::after {
+  bottom: -30%;
+  right: -20%;
+  background: radial-gradient(circle, #1b2f6e 0%, transparent 70%);
+  animation: drift-2 28s ease-in-out infinite;
+}
+
 /* 타이핑 인디케이터: 점 3개가 차례로 페이드 */
 @keyframes typing-dot {
   0%,
