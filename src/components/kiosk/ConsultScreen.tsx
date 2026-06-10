@@ -127,14 +127,23 @@ export default function ConsultScreen({
 
   const media = MEDIA[imageKey] ?? MEDIA.overview;
 
-  // AI 오브 상태 — loading/listening 시 "사고" 모드, speaking 시 "발화" 모드
-  const orbMode = loading || listening ? 'thinking' : speaking ? 'speaking' : 'idle';
-  const orbClass =
+  // AI 엠블럼 상태
+  const orbMode: 'idle' | 'thinking' | 'speaking' =
+    loading || listening ? 'thinking' : speaking ? 'speaking' : 'idle';
+  const coreClass =
     orbMode === 'thinking'
-      ? 'ai-orb ai-orb-thinking'
+      ? 'ai-core ai-core-thinking'
       : orbMode === 'speaking'
-        ? 'ai-orb ai-orb-speaking'
-        : 'ai-orb';
+        ? 'ai-core ai-core-speaking'
+        : 'ai-core';
+  const rippleClass =
+    orbMode === 'thinking'
+      ? 'ai-ripple ai-ripple-thinking'
+      : orbMode === 'speaking'
+        ? 'ai-ripple ai-ripple-speaking'
+        : 'ai-ripple';
+  // 상태별 펄스 링 개수 — 대기:1, 사고/발화:2
+  const rippleCount = orbMode === 'idle' ? 1 : 2;
 
   return (
     <div className="relative flex h-full w-full bg-gradient-to-br from-navy-800 to-navy-900">
@@ -143,11 +152,30 @@ export default function ConsultScreen({
 
       {/* 좌측: AI 오브 + 동기 안내 이미지 */}
       <div className="relative z-10 hidden w-[42%] flex-col items-center justify-center border-r border-gold-500/20 p-8 lg:flex">
-        {/* AI 오브 — 부드러운 골드 글로우 */}
-        <div className="relative mb-6 flex h-32 w-32 items-center justify-center">
-          <div className={`absolute inset-0 rounded-full ${orbClass} opacity-60 blur-2xl`} />
-          <div className={`relative h-24 w-24 rounded-full ${orbClass}`} />
+        {/* AI 엠블럼 — 의료 십자 + 잔잔한 골드 파동 (사이트 톤) */}
+        <div className="relative mb-6 flex h-36 w-36 items-center justify-center">
+          {/* 펄스 링 (1~2개) */}
+          {Array.from({ length: rippleCount }).map((_, i) => (
+            <span
+              key={`${orbMode}-${i}`}
+              className={`absolute inset-2 rounded-full border border-gold-400/50 ${rippleClass}`}
+              style={{ animationDelay: `${i * 0.9}s` }}
+            />
+          ))}
+          {/* 고정 외곽 헤일로 */}
+          <span className="absolute inset-0 rounded-full border border-gold-500/15" />
+          {/* 중앙 코어 — 의료 십자 */}
+          <div
+            className={`relative flex h-20 w-20 items-center justify-center rounded-full bg-navy-900/40 backdrop-blur-sm ${coreClass}`}
+          >
+            <svg className="h-7 w-7 text-gold-400" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M19 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2zm-2 10h-4v4h-2v-4H7v-2h4V7h2v4h4v2z" />
+            </svg>
+          </div>
         </div>
+        <p className="-mt-2 mb-4 text-xs uppercase tracking-[0.3em] text-gold-400/70">
+          {orbMode === 'thinking' ? 'Listening' : orbMode === 'speaking' ? 'Speaking' : 'Ready'}
+        </p>
 
         <div
           className="animate-fade-up w-full overflow-hidden rounded-2xl shadow-2xl"
@@ -184,10 +212,21 @@ export default function ConsultScreen({
       <div className="relative z-10 flex flex-1 flex-col">
         {/* 헤더 */}
         <div className="flex items-center justify-between gap-3 border-b border-gold-500/20 px-4 py-3 sm:px-8 sm:py-5">
-          {/* 미니 AI 오브 (모바일에서도 보임) */}
+          {/* 미니 엠블럼 (모바일) — 십자만, 펄스 링은 사고/발화 시에만 1개 */}
           <div className="relative flex h-10 w-10 shrink-0 items-center justify-center lg:hidden">
-            <div className={`absolute inset-0 rounded-full ${orbClass} opacity-60 blur-md`} />
-            <div className={`relative h-7 w-7 rounded-full ${orbClass}`} />
+            {orbMode !== 'idle' && (
+              <span
+                className={`absolute inset-0 rounded-full border border-gold-400/50 ${rippleClass}`}
+              />
+            )}
+            <span className="absolute inset-0 rounded-full border border-gold-500/20" />
+            <div
+              className={`relative flex h-7 w-7 items-center justify-center rounded-full bg-navy-900/40 ${coreClass}`}
+            >
+              <svg className="h-3.5 w-3.5 text-gold-400" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M19 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2zm-2 10h-4v4h-2v-4H7v-2h4V7h2v4h4v2z" />
+              </svg>
+            </div>
           </div>
           <div className="min-w-0 flex-1">
             <div className="flex items-center gap-2">
