@@ -73,13 +73,13 @@ export function useSpeech() {
 
   // 재생 중인 서버 TTS 오디오 중단 (진행 중이던 speak도 무효화)
   const stopAudio = useCallback(() => {
-    playTokenRef.current += 1;
+    playTokenRef.current += 1; // 토큰 선증가 → 이후 발동되는 핸들러는 '구세대'로 무시됨
     const a = audioRef.current;
     if (a) {
-      // 핸들러를 먼저 떼어내, 멈추는 과정에서 폴백 음성이 끼어들지 않게 한다.
-      a.onended = null;
-      a.onerror = null;
       a.pause();
+      // error 이벤트를 인위적으로 발생시켜 speak() 내부의 재생 대기 promise를 해제한다.
+      // (onerror 핸들러는 resolve(false)만 하므로 폴백 음성이 끼어들지 않는다)
+      a.dispatchEvent(new Event('error'));
       audioRef.current = null;
     }
   }, []);
@@ -138,29 +138,38 @@ export function useSpeech() {
     [stopAudio],
   );
 
-  /** 브라우저 기본 TTS (폴백) */
-  const speakBrowser = useCallback((text: string) => {
-    if (typeof window === 'undefined' || !('speechSynthesis' in window)) {
-      setSpeaking(false);
-      return;
-    }
-    window.speechSynthesis.cancel();
-    const utter = new SpeechSynthesisUtterance(text);
-    utter.lang = 'ko-KR';
-    utter.rate = 1.02;
-    utter.pitch = 1.0;
-    utter.onstart = () => setSpeaking(true);
-    utter.onend = () => setSpeaking(false);
-    utter.onerror = () => setSpeaking(false);
-    window.speechSynthesis.speak(utter);
+  /** 브라우저 기본 TTS (폴백) — 발화가 끝나면 resolve */
+  const speakBrowser = useCallback((text: string): Promise<void> => {
+    return new Promise((resolve) => {
+      if (typeof window === 'undefined' || !('speechSynthesis' in window)) {
+        setSpeaking(false);
+        return resolve();
+      }
+      window.speechSynthesis.cancel();
+      const utter = new SpeechSynthesisUtterance(text);
+      utter.lang = 'ko-KR';
+      utter.rate = 1.02;
+      utter.pitch = 1.0;
+      utter.onstart = () => setSpeaking(true);
+      utter.onend = () => {
+        setSpeaking(false);
+        resolve();
+      };
+      utter.onerror = () => {
+        setSpeaking(false);
+        resolve();
+      };
+      window.speechSynthesis.speak(utter);
+    });
   }, []);
 
   /**
-   * 텍스트를 음성으로 출력. 먼저 서버(Gemini) 신경망 TTS를 시도하고,
-   * 키 없음/실패(204·오류) 시 브라우저 기본 음성으로 폴백한다.
+   * 텍스트를 음성으로 출력. 먼저 서버 신경망 TTS를 시도하고, 실패 시 브라우저 음성 폴백.
+   * **재생이 끝난 시점에 resolve**되며, 끝까지 정상 재생했으면 true를 반환한다
+   * (도중에 새 speak로 대체/중단됐으면 false) — 자동 청취 등 후속 동작의 트리거로 사용.
    */
   const speak = useCallback(
-    async (text: string) => {
+    async (text: string): Promise<boolean> => {
       unlockAudio(); // 모바일 자동재생 정책 우회 (no-op if already unlocked)
       stopAudio(); // 이전 재생 중단 + 토큰 증가
       if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
@@ -177,32 +186,47 @@ export function useSpeech() {
         });
 
         // 더 새로운 speak가 시작됐다면 이 요청은 폐기
-        if (myToken !== playTokenRef.current) return;
+        if (myToken !== playTokenRef.current) return false;
 
         // 204(폴백 신호)·실패 → 브라우저 음성
         if (res.status !== 200) {
-          speakBrowser(text);
-          return;
+          await speakBrowser(text);
+          return myToken === playTokenRef.current;
         }
 
         const blob = await res.blob();
-        if (myToken !== playTokenRef.current) return; // 재확인
+        if (myToken !== playTokenRef.current) return false; // 재확인
 
         const url = URL.createObjectURL(blob);
         const audio = new Audio(url);
         audioRef.current = audio;
-        audio.onended = () => {
-          setSpeaking(false);
-          URL.revokeObjectURL(url);
-        };
-        audio.onerror = () => {
-          setSpeaking(false);
-          URL.revokeObjectURL(url);
-        };
-        await audio.play();
+
+        // 재생 종료까지 대기
+        const completed = await new Promise<boolean>((resolve) => {
+          audio.onended = () => {
+            setSpeaking(false);
+            URL.revokeObjectURL(url);
+            resolve(true);
+          };
+          audio.onerror = () => {
+            setSpeaking(false);
+            URL.revokeObjectURL(url);
+            resolve(false);
+          };
+          audio.play().catch(() => {
+            setSpeaking(false);
+            URL.revokeObjectURL(url);
+            resolve(false);
+          });
+        });
+        return completed && myToken === playTokenRef.current;
       } catch {
         // 네트워크 등 실패 → 브라우저 음성 (단, 최신 요청일 때만)
-        if (myToken === playTokenRef.current) speakBrowser(text);
+        if (myToken === playTokenRef.current) {
+          await speakBrowser(text);
+          return myToken === playTokenRef.current;
+        }
+        return false;
       }
     },
     [unlockAudio, stopAudio, speakBrowser],
