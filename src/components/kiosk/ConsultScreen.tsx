@@ -80,7 +80,7 @@ export default function ConsultScreen({
       : `안녕하세요 ${visitor.name}님, 한빛내과의원 AI 안내입니다. 진료시간, 위치, 접수 방법 등 무엇이든 물어보세요.`;
     setMessages([{ role: 'assistant', content: greeting, source: 'llm' }]);
     void speak(greeting);
-  }, [unlockAudio, speak, visitor.name]);
+  }, [unlockAudio, speak, visitor.name, visitor.anonymous]);
 
   const ask = useCallback(
     async (question: string) => {
