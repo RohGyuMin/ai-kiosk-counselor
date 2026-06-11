@@ -43,7 +43,7 @@ export default function AdminPage() {
         <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
           <div>
             <h1 className="text-xl font-bold text-navy-900">AI 키오스크 관리자</h1>
-            <p className="text-sm text-slate-500">한빛자이 더 센트럴 · 모델하우스</p>
+            <p className="text-sm text-slate-500">한빛내과의원 · AI 안내 키오스크</p>
           </div>
           <div className="flex gap-2">
             <button
@@ -76,6 +76,66 @@ export default function AdminPage() {
             }
             suffix="건"
           />
+        </section>
+
+        {/* 방문 추이 — 일별 / 시간대 */}
+        <section className="grid gap-4 lg:grid-cols-2">
+          {/* 일별 방문 (최근 14일) */}
+          <div className="rounded-xl border bg-white p-6">
+            <h2 className="mb-4 font-semibold">일별 방문 추이 (최근 14일)</h2>
+            {stats && stats.dailyVisitors.length > 0 ? (
+              <div className="flex h-36 items-end gap-1.5">
+                {[...stats.dailyVisitors].reverse().map((d) => {
+                  const max = Math.max(...stats.dailyVisitors.map((x) => x.count), 1);
+                  return (
+                    <div key={d.date} className="group relative flex-1">
+                      <div
+                        className="w-full rounded-t bg-navy-800 transition group-hover:bg-gold-500"
+                        style={{ height: `${Math.max((d.count / max) * 120, 4)}px` }}
+                      />
+                      <p className="mt-1 origin-left -rotate-45 text-[9px] text-slate-400">
+                        {d.date.slice(5)}
+                      </p>
+                      <span className="absolute -top-5 left-1/2 hidden -translate-x-1/2 text-xs font-semibold text-navy-900 group-hover:block">
+                        {d.count}
+                      </span>
+                    </div>
+                  );
+                })}
+              </div>
+            ) : (
+              <p className="text-sm text-slate-400">아직 데이터가 없습니다.</p>
+            )}
+          </div>
+
+          {/* 시간대 분포 */}
+          <div className="rounded-xl border bg-white p-6">
+            <h2 className="mb-4 font-semibold">시간대별 방문 분포</h2>
+            {stats && stats.hourlyVisitors.length > 0 ? (
+              <div className="flex h-36 items-end gap-1">
+                {Array.from({ length: 13 }, (_, i) => i + 8).map((hour) => {
+                  const found = stats.hourlyVisitors.find((x) => x.hour === hour);
+                  const count = found?.count ?? 0;
+                  const max = Math.max(...stats.hourlyVisitors.map((x) => x.count), 1);
+                  return (
+                    <div key={hour} className="group relative flex-1">
+                      <div
+                        className={`w-full rounded-t transition group-hover:bg-gold-500 ${count > 0 ? 'bg-navy-800' : 'bg-slate-100'}`}
+                        style={{ height: `${Math.max((count / max) * 120, 4)}px` }}
+                      />
+                      <p className="mt-1 text-center text-[9px] text-slate-400">{hour}</p>
+                      <span className="absolute -top-5 left-1/2 hidden -translate-x-1/2 text-xs font-semibold text-navy-900 group-hover:block">
+                        {count}
+                      </span>
+                    </div>
+                  );
+                })}
+              </div>
+            ) : (
+              <p className="text-sm text-slate-400">아직 데이터가 없습니다.</p>
+            )}
+            <p className="mt-2 text-right text-xs text-slate-400">08시 ~ 20시</p>
+          </div>
         </section>
 
         {/* 질문 키워드 빈도 */}

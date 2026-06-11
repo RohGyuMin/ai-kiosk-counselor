@@ -49,4 +49,6 @@ export interface AdminStats {
   totalMessages: number;
   keywordCounts: { keyword: string; count: number }[];
   dailyVisitors: { date: string; count: number }[];
+  /** 시간대(0~23)별 방문 분포 */
+  hourlyVisitors: { hour: number; count: number }[];
 }

@@ -109,8 +109,22 @@ export function getStats(): AdminStats {
       'SELECT date(started_at) AS date, COUNT(*) AS count FROM sessions GROUP BY date(started_at) ORDER BY date DESC LIMIT 14',
     )
     .all() as unknown as { date: string; count: number }[];
+  const hourlyVisitors = (
+    db
+      .prepare(
+        "SELECT CAST(strftime('%H', started_at) AS INTEGER) AS hour, COUNT(*) AS count FROM sessions GROUP BY hour ORDER BY hour",
+      )
+      .all() as unknown as { hour: number; count: number }[]
+  ).filter((r) => Number.isFinite(r.hour));
 
-  return { totalVisitors, totalSessions, totalMessages, keywordCounts, dailyVisitors };
+  return {
+    totalVisitors,
+    totalSessions,
+    totalMessages,
+    keywordCounts,
+    dailyVisitors,
+    hourlyVisitors,
+  };
 }
 
 /** 수집 데이터(엑셀 추출용) */
