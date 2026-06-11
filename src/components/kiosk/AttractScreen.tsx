@@ -1,13 +1,20 @@
 'use client';
 
+// 대기(Attract) 화면 — 두 가지 진입점
+//  ① 접수까지 진행 (이름·연락처 입력 → 안내 → 번호표 발급)
+//  ② 안내만 받기 (둘러보기 — 개인정보 입력 없이 바로 상담만)
+
 import { CLINIC } from '@/lib/knowledge';
 
-export default function AttractScreen({ onStart }: { onStart: () => void }) {
+export default function AttractScreen({
+  onStartReception,
+  onBrowse,
+}: {
+  onStartReception: () => void;
+  onBrowse: () => void;
+}) {
   return (
-    <button
-      onClick={onStart}
-      className="group flex h-full w-full flex-col items-center justify-center bg-gradient-to-br from-navy-800 to-navy-900 px-6 text-center"
-    >
+    <div className="relative flex h-full w-full flex-col items-center justify-center bg-gradient-to-br from-navy-800 to-navy-900 px-6 text-center">
       <div className="animate-fade-up max-w-3xl">
         <p className="mb-4 text-sm tracking-[0.4em] text-gold-400 sm:mb-6 sm:text-xl sm:tracking-[0.5em]">
           SMART CLINIC
@@ -18,26 +25,45 @@ export default function AttractScreen({ onStart }: { onStart: () => void }) {
         <p className="mt-3 text-lg text-cream/70 sm:mt-4 sm:text-2xl">{CLINIC.slogan}</p>
         <p className="mt-2 text-sm text-cream/50 sm:text-lg">{CLINIC.nearbyStation}</p>
 
-        <div className="mt-10 flex flex-col items-center gap-3 sm:mt-20 sm:gap-4">
-          <div className="animate-pulse-ring flex h-20 w-20 items-center justify-center rounded-full bg-gold-500 text-navy-900 sm:h-28 sm:w-28">
-            {/* 십자(+) 의료 아이콘 */}
-            <svg className="h-8 w-8 sm:h-11 sm:w-11" viewBox="0 0 24 24" fill="currentColor">
+        {/* 의료 십자 엠블럼 */}
+        <div className="mt-8 flex justify-center sm:mt-12">
+          <div className="animate-pulse-ring flex h-16 w-16 items-center justify-center rounded-full bg-gold-500 text-navy-900 sm:h-24 sm:w-24">
+            <svg className="h-7 w-7 sm:h-10 sm:w-10" viewBox="0 0 24 24" fill="currentColor">
               <path d="M19 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2zm-2 10h-4v4h-2v-4H7v-2h4V7h2v4h4v2z" />
             </svg>
           </div>
-          <p className="mt-3 text-xl font-semibold text-gold-400 transition group-active:scale-95 sm:mt-4 sm:text-3xl">
-            화면을 터치하여 안내 시작
-          </p>
-          <p className="px-2 text-sm text-cream/50 sm:text-lg">
-            진료시간 · 접수 · 위치 무엇이든 물어보세요
-          </p>
         </div>
+
+        {/* 두 진입점 */}
+        <div className="mt-8 grid w-full gap-3 sm:mx-auto sm:mt-12 sm:max-w-xl sm:grid-cols-2 sm:gap-4">
+          {/* ① 접수까지 진행 (primary) */}
+          <button
+            onClick={onStartReception}
+            className="group rounded-2xl bg-gold-500 px-6 py-5 text-navy-900 shadow-xl transition active:scale-95 sm:px-6 sm:py-7"
+          >
+            <p className="text-lg font-bold sm:text-xl">접수하기</p>
+            <p className="mt-1 text-xs opacity-80 sm:text-sm">AI 안내 + 대기 번호표 발급</p>
+          </button>
+
+          {/* ② 안내만 (secondary, 둘러보기) */}
+          <button
+            onClick={onBrowse}
+            className="group rounded-2xl border border-gold-500/40 bg-navy-900/40 px-6 py-5 text-cream backdrop-blur-sm transition hover:bg-navy-900/60 active:scale-95 sm:px-6 sm:py-7"
+          >
+            <p className="text-lg font-bold text-gold-400 sm:text-xl">안내만 받기</p>
+            <p className="mt-1 text-xs text-cream/70 sm:text-sm">개인정보 입력 없이 둘러보기</p>
+          </button>
+        </div>
+
+        <p className="mt-6 text-xs text-cream/40 sm:mt-8 sm:text-sm">
+          진료시간 · 접수 · 위치 · 보험 무엇이든 물어보세요
+        </p>
       </div>
 
       <div className="absolute bottom-4 px-4 text-center text-xs text-cream/40 sm:bottom-8 sm:text-sm">
         {CLINIC.director} &nbsp;|&nbsp; {CLINIC.phone}
         <span className="hidden sm:inline"> &nbsp;|&nbsp; AI 안내 키오스크</span>
       </div>
-    </button>
+    </div>
   );
 }

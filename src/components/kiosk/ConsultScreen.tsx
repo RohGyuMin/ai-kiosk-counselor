@@ -75,7 +75,9 @@ export default function ConsultScreen({
     if (greetedRef.current) return;
     greetedRef.current = true;
     unlockAudio();
-    const greeting = `안녕하세요 ${visitor.name}님, 한빛내과의원 AI 안내입니다. 진료시간, 위치, 접수 방법 등 무엇이든 물어보세요.`;
+    const greeting = visitor.anonymous
+      ? '안녕하세요, 한빛내과의원 AI 안내입니다. 진료시간, 위치, 접수 방법 등 무엇이든 편하게 물어보세요.'
+      : `안녕하세요 ${visitor.name}님, 한빛내과의원 AI 안내입니다. 진료시간, 위치, 접수 방법 등 무엇이든 물어보세요.`;
     setMessages([{ role: 'assistant', content: greeting, source: 'llm' }]);
     void speak(greeting);
   }, [unlockAudio, speak, visitor.name]);
@@ -253,7 +255,7 @@ export default function ConsultScreen({
               </p>
             </div>
             <p className="mt-0.5 truncate text-base font-semibold text-cream sm:text-xl">
-              {visitor.name}님, 환영합니다
+              {visitor.anonymous ? '한빛내과의원' : `${visitor.name}님, 환영합니다`}
             </p>
           </div>
           <button
@@ -277,7 +279,9 @@ export default function ConsultScreen({
           {messages.length === 0 && (
             <div className="mt-2 rounded-2xl bg-cream/5 p-4 text-cream/80 sm:mt-4 sm:p-6">
               <p className="text-base sm:text-xl">
-                안녕하세요, {visitor.name}님. 한빛내과의원 AI 안내입니다.
+                {visitor.anonymous
+                  ? '안녕하세요, 한빛내과의원 AI 안내입니다.'
+                  : `안녕하세요, ${visitor.name}님. 한빛내과의원 AI 안내입니다.`}
               </p>
               <p className="mt-2 text-sm text-cream/60 sm:text-base">
                 아래 추천 질문을 누르거나, 마이크 버튼을 눌러 음성으로 물어보세요.
