@@ -153,7 +153,7 @@ export default function ConsultScreen({
   const rippleCount = orbMode === 'idle' ? 1 : 2;
 
   return (
-    <div className="relative flex h-full w-full bg-gradient-to-br from-navy-800 to-navy-900">
+    <div className="relative flex h-full w-full">
       {/* 앰비언트 오로라 배경 */}
       <div className="aurora" />
 
@@ -173,14 +173,14 @@ export default function ConsultScreen({
           <span className="absolute inset-0 rounded-full border border-gold-500/15" />
           {/* 중앙 코어 — 의료 십자 */}
           <div
-            className={`relative flex h-20 w-20 items-center justify-center rounded-full bg-navy-900/40 backdrop-blur-sm ${coreClass}`}
+            className={`relative flex h-20 w-20 items-center justify-center rounded-full bg-ink/5 backdrop-blur-sm ${coreClass}`}
           >
-            <svg className="h-7 w-7 text-gold-400" viewBox="0 0 24 24" fill="currentColor">
+            <svg className="h-7 w-7 text-gold-500" viewBox="0 0 24 24" fill="currentColor">
               <path d="M19 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2zm-2 10h-4v4h-2v-4H7v-2h4V7h2v4h4v2z" />
             </svg>
           </div>
         </div>
-        <p className="-mt-2 mb-4 text-xs uppercase tracking-[0.3em] text-gold-400/70">
+        <p className="-mt-2 mb-4 text-xs uppercase tracking-[0.3em] text-gold-500/80">
           {orbMode === 'thinking' ? 'Listening' : orbMode === 'speaking' ? 'Speaking' : 'Ready'}
         </p>
 
@@ -197,7 +197,7 @@ export default function ConsultScreen({
             priority
           />
         </div>
-        <p className="mt-6 text-center text-xl text-gold-400">{media.alt}</p>
+        <p className="mt-6 text-center text-xl text-gold-500">{media.alt}</p>
         {speaking && (
           <div className="mt-6 flex items-end gap-1" aria-label="음성 안내 중">
             {[0, 1, 2, 3, 4].map((i) => (
@@ -228,9 +228,9 @@ export default function ConsultScreen({
             )}
             <span className="absolute inset-0 rounded-full border border-gold-500/20" />
             <div
-              className={`relative flex h-7 w-7 items-center justify-center rounded-full bg-navy-900/40 ${coreClass}`}
+              className={`relative flex h-7 w-7 items-center justify-center rounded-full bg-ink/5 ${coreClass}`}
             >
-              <svg className="h-3.5 w-3.5 text-gold-400" viewBox="0 0 24 24" fill="currentColor">
+              <svg className="h-3.5 w-3.5 text-gold-500" viewBox="0 0 24 24" fill="currentColor">
                 <path d="M19 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2zm-2 10h-4v4h-2v-4H7v-2h4V7h2v4h4v2z" />
               </svg>
             </div>
@@ -249,7 +249,7 @@ export default function ConsultScreen({
                         : 'bg-emerald-400'
                 }`}
               />
-              <p className="text-xs font-medium text-cream/70 sm:text-sm">
+              <p className="text-xs font-medium text-ink/70 sm:text-sm">
                 {loading
                   ? '답변 준비 중'
                   : speaking
@@ -259,7 +259,7 @@ export default function ConsultScreen({
                       : '대기 중'}
               </p>
             </div>
-            <p className="mt-0.5 truncate text-base font-semibold text-cream sm:text-xl">
+            <p className="mt-0.5 truncate text-base font-semibold text-ink sm:text-xl">
               {visitor.anonymous ? '한빛내과의원' : `${visitor.name}님, 환영합니다`}
             </p>
           </div>
@@ -270,7 +270,7 @@ export default function ConsultScreen({
             className={`shrink-0 rounded-lg border px-3 py-2 text-sm active:scale-95 sm:rounded-xl sm:px-4 sm:py-3 sm:text-base ${
               largeText
                 ? 'border-gold-400 bg-gold-500 font-bold text-navy-900'
-                : 'border-cream/30 text-cream/80'
+                : 'border-ink/30 text-ink/80'
             }`}
           >
             가<span className="align-super text-[0.7em]">+</span>
@@ -282,7 +282,7 @@ export default function ConsultScreen({
                 topics: Array.from(topicsRef.current),
               })
             }
-            className="shrink-0 rounded-lg border border-cream/30 px-3 py-2 text-sm text-cream/80 active:scale-95 sm:rounded-xl sm:px-6 sm:py-3 sm:text-base"
+            className="shrink-0 rounded-lg border border-ink/30 px-3 py-2 text-sm text-ink/80 active:scale-95 sm:rounded-xl sm:px-6 sm:py-3 sm:text-base"
           >
             종료
           </button>
@@ -294,14 +294,14 @@ export default function ConsultScreen({
           className="flex-1 space-y-3 overflow-y-auto px-4 py-4 sm:space-y-4 sm:px-8 sm:py-6"
         >
           {messages.length === 0 && (
-            <div className="mt-2 rounded-2xl bg-cream/5 p-4 text-cream/80 sm:mt-4 sm:p-6">
+            <div className="mt-2 rounded-2xl bg-ink/5 p-4 text-ink/80 sm:mt-4 sm:p-6">
               <p className={largeText ? 'text-xl sm:text-2xl' : 'text-base sm:text-xl'}>
                 {visitor.anonymous
                   ? '안녕하세요, 한빛내과의원 AI 안내입니다.'
                   : `안녕하세요, ${visitor.name}님. 한빛내과의원 AI 안내입니다.`}
               </p>
               <p
-                className={`mt-2 text-cream/60 ${largeText ? 'text-lg sm:text-xl' : 'text-sm sm:text-base'}`}
+                className={`mt-2 text-ink/60 ${largeText ? 'text-lg sm:text-xl' : 'text-sm sm:text-base'}`}
               >
                 아래 추천 질문을 누르거나, 마이크 버튼을 눌러 음성으로 물어보세요.
               </p>
@@ -312,11 +312,11 @@ export default function ConsultScreen({
               <div
                 className={`animate-fade-up max-w-[80%] break-words rounded-2xl px-4 py-3 leading-relaxed [overflow-wrap:anywhere] sm:px-5 sm:py-4 ${
                   largeText ? 'text-xl sm:text-2xl' : 'text-base sm:text-lg'
-                } ${m.role === 'user' ? 'bg-gold-500 text-navy-900' : 'bg-cream/10 text-cream'}`}
+                } ${m.role === 'user' ? 'bg-gold-500 text-navy-900' : 'bg-ink/10 text-ink'}`}
               >
                 {m.role === 'assistant' && m.stream ? <StreamedText text={m.content} /> : m.content}
                 {m.role === 'assistant' && m.source === 'fallback' && (
-                  <span className="ml-2 align-middle text-xs text-gold-400/70">
+                  <span className="ml-2 align-middle text-xs text-gold-500/80">
                     · 오프라인 안내
                   </span>
                 )}
@@ -326,7 +326,7 @@ export default function ConsultScreen({
           {loading && (
             <div className="flex justify-start">
               <div
-                className="flex items-center gap-2 rounded-2xl bg-cream/10 px-5 py-4 sm:px-6 sm:py-4"
+                className="flex items-center gap-2 rounded-2xl bg-ink/10 px-5 py-4 sm:px-6 sm:py-4"
                 aria-label="답변 생성 중"
               >
                 <span
@@ -346,7 +346,7 @@ export default function ConsultScreen({
           )}
           {listening && transcript && (
             <div className="flex justify-end">
-              <div className="text-gold-200 max-w-[80%] break-words rounded-2xl border border-gold-400/50 px-4 py-3 text-base [overflow-wrap:anywhere] sm:px-5 sm:py-4 sm:text-lg">
+              <div className="max-w-[80%] break-words rounded-2xl border border-gold-400/50 px-4 py-3 text-base text-ink/90 [overflow-wrap:anywhere] sm:px-5 sm:py-4 sm:text-lg">
                 {transcript}
               </div>
             </div>
@@ -360,7 +360,7 @@ export default function ConsultScreen({
               key={q}
               onClick={() => ask(q)}
               disabled={loading}
-              className={`shrink-0 whitespace-nowrap rounded-full border border-gold-500/40 text-cream/80 transition hover:bg-cream/10 active:scale-95 disabled:opacity-40 ${
+              className={`shrink-0 whitespace-nowrap rounded-full border border-gold-500/40 text-ink/80 transition hover:bg-ink/10 active:scale-95 disabled:opacity-40 ${
                 largeText
                   ? 'px-4 py-2.5 text-base sm:px-5 sm:py-3 sm:text-lg'
                   : 'px-3 py-1.5 text-xs sm:px-4 sm:py-2 sm:text-sm'
@@ -397,7 +397,7 @@ export default function ConsultScreen({
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={(e) => e.key === 'Enter' && ask(input)}
             placeholder={supported ? '입력 또는 마이크' : '질문을 입력하세요'}
-            className="min-w-0 flex-1 rounded-xl border border-gold-500/30 bg-navy-900/60 px-3 py-3 text-base text-cream outline-none focus:border-gold-400 sm:px-5 sm:py-4 sm:text-lg"
+            className="min-w-0 flex-1 rounded-xl border border-gold-500/30 bg-deep/60 px-3 py-3 text-base text-ink outline-none focus:border-gold-400 sm:px-5 sm:py-4 sm:text-lg"
           />
           <button
             onClick={() => ask(input)}
@@ -408,7 +408,7 @@ export default function ConsultScreen({
           </button>
         </div>
         {!supported && (
-          <p className="px-8 pb-3 text-center text-sm text-gold-400/70">
+          <p className="px-8 pb-3 text-center text-sm text-gold-500/80">
             현재 브라우저가 음성 기능을 지원하지 않아 텍스트 모드로 동작합니다.
           </p>
         )}

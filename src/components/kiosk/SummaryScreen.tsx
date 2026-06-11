@@ -80,20 +80,20 @@ export default function SummaryScreen({
     QRCode.toDataURL(text, {
       width: 160,
       margin: 1,
-      color: { dark: '#0b1733', light: '#f6f1e7' },
+      color: { dark: '#0d2137', light: '#e8f5f3' },
     })
       .then(setQrUrl)
       .catch(() => setQrUrl(null));
   }, [ticket, department, waitingAhead, estimatedWait]);
 
   return (
-    <div className="flex h-full w-full flex-col items-center justify-center bg-gradient-to-br from-navy-800 to-navy-900 px-6 text-center">
+    <div className="flex h-full w-full flex-col items-center justify-center px-6 text-center">
       {!issued ? (
         // 발급 중 화면
         <div className="animate-fade-up max-w-xl">
           <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center sm:h-20 sm:w-20">
             <svg
-              className="h-12 w-12 animate-spin text-gold-400 sm:h-16 sm:w-16"
+              className="h-12 w-12 animate-spin text-gold-500 sm:h-16 sm:w-16"
               viewBox="0 0 24 24"
             >
               <circle
@@ -108,8 +108,8 @@ export default function SummaryScreen({
               />
             </svg>
           </div>
-          <p className="text-xl text-cream/80 sm:text-2xl">번호표를 발행하고 있습니다</p>
-          <p className="mt-2 text-sm text-cream/50 sm:text-base">잠시만 기다려 주세요</p>
+          <p className="text-xl text-ink/80 sm:text-2xl">번호표를 발행하고 있습니다</p>
+          <p className="mt-2 text-sm text-ink/50 sm:text-base">잠시만 기다려 주세요</p>
         </div>
       ) : (
         // 번호표 카드
@@ -117,7 +117,7 @@ export default function SummaryScreen({
           {/* 카드 */}
           <div className="relative mx-auto overflow-hidden rounded-3xl bg-cream text-navy-900 shadow-2xl ring-1 ring-gold-500/30">
             {/* 영수증 같은 톱니 가장자리 효과 */}
-            <div className="absolute inset-x-0 -top-1 h-3 bg-[radial-gradient(circle_at_4px_-2px,transparent_4px,#f6f1e7_4px)] bg-[size:12px_8px]" />
+            <div className="absolute inset-x-0 -top-1 h-3 bg-[radial-gradient(circle_at_4px_-2px,transparent_4px,#e8f5f3_4px)] bg-[size:12px_8px]" />
 
             <div className="px-6 py-8 sm:px-8 sm:py-10">
               <p className="text-sm font-semibold tracking-[0.3em] text-navy-700/70 sm:text-base">
@@ -179,16 +179,16 @@ export default function SummaryScreen({
             </div>
 
             {/* 하단 톱니 가장자리 */}
-            <div className="absolute inset-x-0 -bottom-1 h-3 rotate-180 bg-[radial-gradient(circle_at_4px_-2px,transparent_4px,#f6f1e7_4px)] bg-[size:12px_8px]" />
+            <div className="absolute inset-x-0 -bottom-1 h-3 rotate-180 bg-[radial-gradient(circle_at_4px_-2px,transparent_4px,#e8f5f3_4px)] bg-[size:12px_8px]" />
           </div>
 
-          <p className="mt-6 text-sm text-cream/60 sm:text-base">
+          <p className="mt-6 text-sm text-ink/60 sm:text-base">
             번호가 호명될 때까지 대기실에서 잠시만 기다려 주세요.
           </p>
 
           <button
             onClick={onReset}
-            className="mt-6 rounded-xl border border-cream/30 px-6 py-2.5 text-sm text-cream/80 active:scale-95 sm:px-8 sm:py-3 sm:text-base"
+            className="mt-6 rounded-xl border border-ink/30 px-6 py-2.5 text-sm text-ink/80 active:scale-95 sm:px-8 sm:py-3 sm:text-base"
           >
             처음으로
           </button>

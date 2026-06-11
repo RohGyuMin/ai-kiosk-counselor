@@ -14,16 +14,16 @@ export default function AttractScreen({
   onBrowse: () => void;
 }) {
   return (
-    <div className="relative flex h-full w-full flex-col items-center justify-center bg-gradient-to-br from-navy-800 to-navy-900 px-6 text-center">
+    <div className="relative flex h-full w-full flex-col items-center justify-center px-6 text-center">
       <div className="animate-fade-up max-w-3xl">
-        <p className="mb-4 text-sm tracking-[0.4em] text-gold-400 sm:mb-6 sm:text-xl sm:tracking-[0.5em]">
+        <p className="mb-4 text-sm tracking-[0.4em] text-gold-500 sm:mb-6 sm:text-xl sm:tracking-[0.5em]">
           SMART CLINIC
         </p>
-        <h1 className="font-serif-display text-4xl font-bold leading-tight text-cream sm:text-6xl lg:text-7xl">
+        <h1 className="font-serif-display text-4xl font-bold leading-tight text-ink sm:text-6xl lg:text-7xl">
           {CLINIC.name}
         </h1>
-        <p className="mt-3 text-lg text-cream/70 sm:mt-4 sm:text-2xl">{CLINIC.slogan}</p>
-        <p className="mt-2 text-sm text-cream/50 sm:text-lg">{CLINIC.nearbyStation}</p>
+        <p className="mt-3 text-lg text-ink/70 sm:mt-4 sm:text-2xl">{CLINIC.slogan}</p>
+        <p className="mt-2 text-sm text-ink/50 sm:text-lg">{CLINIC.nearbyStation}</p>
 
         {/* 의료 십자 엠블럼 */}
         <div className="mt-8 flex justify-center sm:mt-12">
@@ -48,19 +48,19 @@ export default function AttractScreen({
           {/* ② 안내만 (secondary, 둘러보기) */}
           <button
             onClick={onBrowse}
-            className="group rounded-2xl border border-gold-500/40 bg-navy-900/40 px-6 py-5 text-cream backdrop-blur-sm transition hover:bg-navy-900/60 active:scale-95 sm:px-6 sm:py-7"
+            className="group rounded-2xl border border-gold-500/40 bg-ink/5 px-6 py-5 text-ink backdrop-blur-sm transition hover:bg-deep/60 active:scale-95 sm:px-6 sm:py-7"
           >
-            <p className="text-lg font-bold text-gold-400 sm:text-xl">안내만 받기</p>
-            <p className="mt-1 text-xs text-cream/70 sm:text-sm">개인정보 입력 없이 둘러보기</p>
+            <p className="text-lg font-bold text-gold-500 sm:text-xl">안내만 받기</p>
+            <p className="mt-1 text-xs text-ink/70 sm:text-sm">개인정보 입력 없이 둘러보기</p>
           </button>
         </div>
 
-        <p className="mt-6 text-xs text-cream/40 sm:mt-8 sm:text-sm">
+        <p className="mt-6 text-xs text-ink/40 sm:mt-8 sm:text-sm">
           진료시간 · 접수 · 위치 · 보험 무엇이든 물어보세요
         </p>
       </div>
 
-      <div className="absolute bottom-4 px-4 text-center text-xs text-cream/40 sm:bottom-8 sm:text-sm">
+      <div className="absolute bottom-4 px-4 text-center text-xs text-ink/40 sm:bottom-8 sm:text-sm">
         {CLINIC.director} &nbsp;|&nbsp; {CLINIC.phone}
         <span className="hidden sm:inline"> &nbsp;|&nbsp; AI 안내 키오스크</span>
       </div>

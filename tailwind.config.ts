@@ -19,6 +19,9 @@ const config: Config = {
           400: '#1abfaa',
         },
         cream: '#e8f5f3',
+        // 테마 토큰 — .kiosk-root의 CSS 변수에 연동 (라이트/다크 전환)
+        ink: 'rgb(var(--k-ink) / <alpha-value>)',
+        deep: 'rgb(var(--k-deep) / <alpha-value>)',
       },
     },
   },

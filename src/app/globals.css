@@ -3,14 +3,16 @@
 @tailwind utilities;
 
 :root {
-  /* 프리미엄 분양/건설 팔레트 */
-  --navy-900: #0b1733;
-  --navy-800: #122150;
-  --navy-700: #1b2f6e;
-  --gold-500: #c8a86a;
-  --gold-400: #d8bd85;
-  --cream: #f6f1e7;
-  --ink: #0b1733;
+  /* 클리닉 팔레트 (tailwind.config와 동기화) */
+  --navy-900: #0d2137;
+  --navy-800: #0f3460;
+  --navy-700: #1a5276;
+  --gold-500: #0e9f8c;
+  --gold-400: #1abfaa;
+  --cream: #e8f5f3;
+  --ink: #0d2137;
+  /* 액센트(청록) RGB — 글로우/파동 효과용 */
+  --k-accent: 14 159 140;
 }
 
 html,
@@ -48,17 +50,38 @@ body {
   /* iOS Safari 동적 주소창에 대응: dvh가 있으면 그것을, 없으면 100vh */
   height: 100vh;
   height: 100dvh;
+
+  /* ── 테마 토큰 (기본: 라이트) ──
+     ink  = 본문/요소 색 (라이트: 진네이비, 다크: 민트화이트)
+     deep = 표면/입력 배경 (라이트: 화이트, 다크: 진네이비)  */
+  --k-ink: 13 33 55;
+  --k-deep: 255 255 255;
+  --k-bg-from: #ffffff;
+  --k-bg-to: #e8f5f3;
+  --k-aurora-opacity: 0.16;
+}
+.kiosk-root[data-theme='dark'] {
+  --k-ink: 232 245 243;
+  --k-deep: 13 33 55;
+  --k-bg-from: #0f3460;
+  --k-bg-to: #0d2137;
+  --k-aurora-opacity: 0.3;
+}
+
+/* 테마 그라데이션 배경 (기존 from-navy-800 to-navy-900 대체) */
+.k-bg {
+  background: linear-gradient(135deg, var(--k-bg-from) 0%, var(--k-bg-to) 100%);
 }
 
 @keyframes pulse-ring {
   0% {
-    box-shadow: 0 0 0 0 rgba(200, 168, 106, 0.5);
+    box-shadow: 0 0 0 0 rgb(var(--k-accent) / 0.5);
   }
   70% {
-    box-shadow: 0 0 0 28px rgba(200, 168, 106, 0);
+    box-shadow: 0 0 0 28px rgb(var(--k-accent) / 0);
   }
   100% {
-    box-shadow: 0 0 0 0 rgba(200, 168, 106, 0);
+    box-shadow: 0 0 0 0 rgb(var(--k-accent) / 0);
   }
 }
 .animate-pulse-ring {
@@ -105,14 +128,14 @@ body {
   100% {
     transform: scale(1);
     box-shadow:
-      0 0 0 1px rgba(216, 189, 133, 0.4) inset,
-      0 0 20px rgba(216, 189, 133, 0.2);
+      0 0 0 1px rgb(var(--k-accent) / 0.4) inset,
+      0 0 20px rgb(var(--k-accent) / 0.2);
   }
   50% {
     transform: scale(1.03);
     box-shadow:
-      0 0 0 1px rgba(216, 189, 133, 0.6) inset,
-      0 0 30px rgba(216, 189, 133, 0.35);
+      0 0 0 1px rgb(var(--k-accent) / 0.6) inset,
+      0 0 30px rgb(var(--k-accent) / 0.35);
   }
 }
 .ai-core {
@@ -171,18 +194,18 @@ body {
   height: 60vw;
   border-radius: 9999px;
   filter: blur(80px);
-  opacity: 0.35;
+  opacity: var(--k-aurora-opacity, 0.3);
 }
 .aurora::before {
   top: -20%;
   left: -15%;
-  background: radial-gradient(circle, #c8a86a 0%, transparent 70%);
+  background: radial-gradient(circle, #1abfaa 0%, transparent 70%);
   animation: drift-1 22s ease-in-out infinite;
 }
 .aurora::after {
   bottom: -30%;
   right: -20%;
-  background: radial-gradient(circle, #1b2f6e 0%, transparent 70%);
+  background: radial-gradient(circle, #1a5276 0%, transparent 70%);
   animation: drift-2 28s ease-in-out infinite;
 }
 
