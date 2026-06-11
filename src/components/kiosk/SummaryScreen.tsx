@@ -7,6 +7,7 @@
 //       → (3) 25초 후 자동으로 처음 화면으로 복귀
 
 import { useEffect, useMemo, useState } from 'react';
+import QRCode from 'qrcode';
 import type { SummaryData } from './KioskApp';
 
 const DEPT_BY_KEYWORD: Record<string, string> = {
@@ -45,6 +46,7 @@ export default function SummaryScreen({
   onReset: () => void;
 }) {
   const [issued, setIssued] = useState(false);
+  const [qrUrl, setQrUrl] = useState<string | null>(null);
 
   // 번호표 생성 모션: 1.6초 후 등장
   useEffect(() => {
@@ -65,6 +67,24 @@ export default function SummaryScreen({
     return (parseInt(ticket.number, 10) % 10) + 3;
   }, [ticket]);
   const estimatedWait = waitingAhead * 4; // 분 (1인당 약 4분 가정)
+
+  // QR 생성 — 폰 카메라로 스캔하면 번호표 정보가 텍스트로 저장됨
+  useEffect(() => {
+    const text = [
+      '[한빛내과의원 대기 번호표]',
+      `번호: ${ticket.letter}-${ticket.number}`,
+      `진료과: ${department}`,
+      `앞 대기: ${waitingAhead}명 / 예상 약 ${estimatedWait}분`,
+      '문의: 02-123-4567',
+    ].join('\n');
+    QRCode.toDataURL(text, {
+      width: 160,
+      margin: 1,
+      color: { dark: '#0b1733', light: '#f6f1e7' },
+    })
+      .then(setQrUrl)
+      .catch(() => setQrUrl(null));
+  }, [ticket, department, waitingAhead, estimatedWait]);
 
   return (
     <div className="flex h-full w-full flex-col items-center justify-center bg-gradient-to-br from-navy-800 to-navy-900 px-6 text-center">
@@ -126,15 +146,31 @@ export default function SummaryScreen({
 
               <div className="my-6 h-px w-full bg-navy-900/10" />
 
-              <div className="grid grid-cols-2 gap-4 text-left">
-                <div>
-                  <p className="text-xs text-navy-700/60 sm:text-sm">앞 대기</p>
-                  <p className="mt-0.5 text-base font-semibold sm:text-lg">{waitingAhead}명</p>
+              <div className="flex items-center gap-4">
+                <div className="grid flex-1 grid-cols-2 gap-4 text-left">
+                  <div>
+                    <p className="text-xs text-navy-700/60 sm:text-sm">앞 대기</p>
+                    <p className="mt-0.5 text-base font-semibold sm:text-lg">{waitingAhead}명</p>
+                  </div>
+                  <div>
+                    <p className="text-xs text-navy-700/60 sm:text-sm">예상 대기</p>
+                    <p className="mt-0.5 text-base font-semibold sm:text-lg">
+                      약 {estimatedWait}분
+                    </p>
+                  </div>
                 </div>
-                <div>
-                  <p className="text-xs text-navy-700/60 sm:text-sm">예상 대기</p>
-                  <p className="mt-0.5 text-base font-semibold sm:text-lg">약 {estimatedWait}분</p>
-                </div>
+                {/* QR — 폰으로 번호표 가져가기 */}
+                {qrUrl && (
+                  <div className="shrink-0 text-center">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={qrUrl}
+                      alt="번호표 QR 코드"
+                      className="h-20 w-20 rounded-lg ring-1 ring-navy-900/10 sm:h-24 sm:w-24"
+                    />
+                    <p className="mt-1 text-[10px] text-navy-700/50 sm:text-xs">폰으로 저장</p>
+                  </div>
+                )}
               </div>
 
               <p className="mt-6 text-xs text-navy-700/50 sm:text-sm">
