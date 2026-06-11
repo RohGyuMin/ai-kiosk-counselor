@@ -202,7 +202,7 @@ export default function ConsultScreen({
       {/* 좌측: 동기 안내 이미지 (지도·시계·번호표 등) */}
       <div className="relative z-10 hidden w-[42%] flex-col items-center justify-center border-r border-gold-500/20 p-8 lg:flex">
         <div
-          className="animate-fade-up w-full max-w-md overflow-hidden rounded-2xl shadow-2xl"
+          className="animate-fade-up w-full max-w-2xl overflow-hidden rounded-2xl shadow-2xl"
           key={imageKey}
         >
           <Image
