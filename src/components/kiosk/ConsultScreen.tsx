@@ -65,6 +65,21 @@ export default function ConsultScreen({
   const [largeText, setLargeText] = useState(false);
   // 키오스크(lg+)에서 텍스트 입력창 표시 여부 — 기본은 음성 중심이라 숨김
   const [showKeyboard, setShowKeyboard] = useState(false);
+  // 캐릭터 프레임 존재 여부 (있으면 입벌림/눈깜빡임 애니메이션, 없으면 기본 이미지만)
+  const [hasTalkFrame, setHasTalkFrame] = useState(false);
+  const [hasBlinkFrame, setHasBlinkFrame] = useState(false);
+
+  // 추가 프레임 프리로드 — 로드 성공 시에만 애니메이션 활성화 (무회귀)
+  useEffect(() => {
+    const probe = (src: string, ok: (v: boolean) => void) => {
+      const img = new window.Image();
+      img.onload = () => ok(true);
+      img.onerror = () => ok(false);
+      img.src = src;
+    };
+    probe('/media/counselor-talk.png', setHasTalkFrame);
+    probe('/media/counselor-blink.png', setHasBlinkFrame);
+  }, []);
   const topicsRef = useRef<Set<string>>(new Set());
   const scrollRef = useRef<HTMLDivElement>(null);
   // StrictMode 이중 마운트 / 재렌더에 대비한 인사 1회 가드
@@ -155,12 +170,13 @@ export default function ConsultScreen({
   // AI 엠블럼 상태
   const orbMode: 'idle' | 'thinking' | 'speaking' =
     loading || listening ? 'thinking' : speaking ? 'speaking' : 'idle';
-  const coreClass =
-    orbMode === 'thinking'
-      ? 'ai-core ai-core-thinking'
-      : orbMode === 'speaking'
-        ? 'ai-core ai-core-speaking'
-        : 'ai-core';
+  // 캐릭터 모션 — 발화: 흔들림, 사고/청취: 가벼운 호흡, 대기: 부유
+  const charMotion =
+    orbMode === 'speaking'
+      ? 'char-speaking'
+      : orbMode === 'thinking'
+        ? 'char-listening'
+        : 'char-idle';
   const rippleClass =
     orbMode === 'thinking'
       ? 'ai-ripple ai-ripple-thinking'
@@ -174,35 +190,62 @@ export default function ConsultScreen({
 
       {/* 좌측: AI 상담사 캐릭터(주인공) + 동기 안내 이미지 */}
       <div className="relative z-10 hidden w-[42%] flex-col items-center justify-center border-r border-gold-500/20 p-8 lg:flex">
-        {/* 상담사 캐릭터 — 발화 시 글로우가 호흡(coreClass) */}
-        <div className={`relative mb-3 w-44 overflow-hidden rounded-3xl xl:w-52 ${coreClass}`}>
-          <Image
-            src="/media/counselor.png"
-            alt="AI 상담사"
-            width={1024}
-            height={1536}
-            className="h-auto w-full"
-            priority
-          />
-          {/* 발화 중 사운드웨이브 — 캐릭터 하단에 겹쳐서 */}
-          {speaking && (
-            <div
-              className="absolute inset-x-0 bottom-0 flex items-end justify-center gap-1 bg-gradient-to-t from-deep/80 to-transparent pb-3 pt-8"
-              aria-label="음성 안내 중"
-            >
-              {[0, 1, 2, 3, 4].map((i) => (
-                <span
-                  key={i}
-                  className="w-1.5 rounded bg-gold-400"
-                  style={{
-                    height: 20,
-                    transformOrigin: 'bottom',
-                    animation: `soundwave 0.9s ease-in-out ${i * 0.12}s infinite`,
-                  }}
-                />
-              ))}
-            </div>
-          )}
+        {/* 상담사 캐릭터 — 모션(부유/흔들림) + 아우라(글로우) + 입·눈 프레임 교체 */}
+        <div className={`mb-3 ${charMotion}`}>
+          <div
+            className={`relative w-44 overflow-hidden rounded-3xl xl:w-52 ${
+              orbMode === 'idle' ? 'char-aura' : 'char-aura-active'
+            }`}
+          >
+            {/* 베이스 프레임 */}
+            <Image
+              src="/media/counselor.png"
+              alt="AI 상담사"
+              width={1024}
+              height={1536}
+              className="block h-auto w-full"
+              priority
+            />
+            {/* 눈 깜빡임 오버레이 (프레임 있을 때만) */}
+            {hasBlinkFrame && (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                src="/media/counselor-blink.png"
+                alt=""
+                aria-hidden="true"
+                className="blink-flash absolute inset-0 h-full w-full"
+              />
+            )}
+            {/* 입벌림 오버레이 — 발화 중에만 깜빡임 (프레임 있을 때만) */}
+            {hasTalkFrame && speaking && (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                src="/media/counselor-talk.png"
+                alt=""
+                aria-hidden="true"
+                className="mouth-flap absolute inset-0 h-full w-full"
+              />
+            )}
+            {/* 발화 중 사운드웨이브 — 프레임 없을 때(립싱크 대체)만, 캐릭터 하단에 겹쳐서 */}
+            {speaking && !hasTalkFrame && (
+              <div
+                className="absolute inset-x-0 bottom-0 flex items-end justify-center gap-1 bg-gradient-to-t from-deep/80 to-transparent pb-3 pt-8"
+                aria-label="음성 안내 중"
+              >
+                {[0, 1, 2, 3, 4].map((i) => (
+                  <span
+                    key={i}
+                    className="w-1.5 rounded bg-gold-400"
+                    style={{
+                      height: 20,
+                      transformOrigin: 'bottom',
+                      animation: `soundwave 0.9s ease-in-out ${i * 0.12}s infinite`,
+                    }}
+                  />
+                ))}
+              </div>
+            )}
+          </div>
         </div>
         <p className="mb-5 text-xs uppercase tracking-[0.3em] text-gold-500/80">
           {orbMode === 'thinking' ? 'Listening' : orbMode === 'speaking' ? 'Speaking' : 'Ready'}

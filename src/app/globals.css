@@ -209,6 +209,92 @@ body {
   animation: drift-2 28s ease-in-out infinite;
 }
 
+/* 상담사 캐릭터 — 살아있는 느낌의 미세 동작 (플랫 일러스트에 CSS만으로) */
+@keyframes char-float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-6px);
+  }
+}
+@keyframes char-speak {
+  0%,
+  100% {
+    transform: translateY(0) rotate(0deg);
+  }
+  25% {
+    transform: translateY(-3px) rotate(-0.5deg);
+  }
+  75% {
+    transform: translateY(-2px) rotate(0.5deg);
+  }
+}
+@keyframes char-listen {
+  0%,
+  100% {
+    transform: translateY(0) scale(1);
+  }
+  50% {
+    transform: translateY(-2px) scale(1.012);
+  }
+}
+.char-idle {
+  animation: char-float 5s ease-in-out infinite;
+}
+.char-speaking {
+  animation: char-speak 1.5s ease-in-out infinite;
+}
+.char-listening {
+  animation: char-listen 1.6s ease-in-out infinite;
+}
+/* 아우라(글로우) — transform과 충돌 없이 box-shadow만 맥동 */
+@keyframes char-aura {
+  0%,
+  100% {
+    box-shadow: 0 8px 32px rgb(var(--k-accent) / 0.18);
+  }
+  50% {
+    box-shadow: 0 8px 48px rgb(var(--k-accent) / 0.38);
+  }
+}
+.char-aura {
+  animation: char-aura 4s ease-in-out infinite;
+}
+.char-aura-active {
+  animation: char-aura 2s ease-in-out infinite;
+}
+/* 입 프레임 교체 — 발화 중 입벌림 오버레이를 ~6Hz로 깜빡여 말하는 느낌 */
+@keyframes mouth-flap {
+  0%,
+  49% {
+    opacity: 0;
+  }
+  50%,
+  100% {
+    opacity: 1;
+  }
+}
+.mouth-flap {
+  animation: mouth-flap 0.16s steps(1, end) infinite;
+}
+/* 눈 깜빡임 — 눈감음 오버레이를 주기적으로 잠깐 노출 */
+@keyframes blink-flash {
+  0%,
+  95.5%,
+  100% {
+    opacity: 0;
+  }
+  96.5%,
+  98.5% {
+    opacity: 1;
+  }
+}
+.blink-flash {
+  animation: blink-flash 5.5s steps(1, end) infinite;
+}
+
 /* 타이핑 인디케이터: 점 3개가 차례로 페이드 */
 @keyframes typing-dot {
   0%,
