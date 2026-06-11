@@ -4,9 +4,22 @@
 // (2) LLM을 못 쓸 때의 폴백(FAQ) 답변 근거도 된다.
 //
 // 관리자에서 편집된 값이 있으면 (clinic_config DB) 그 값이 우선 사용된다 —
-// getEffectiveClinic() 참조. 시스템 프롬프트는 buildSystemPrompt(async)에서 적용.
+// getEffectiveClinic() 참조. 시스템 프롬프트는 buildSystemPrompt에서 적용.
+//
+// 주의: 이 파일은 클라이언트 컴포넌트에서도 import된다 (buildGreeting 등).
+// 따라서 server-only 모듈(./db)은 직접 import하지 않고, 함수 안에서 동적 require로만
+// 호출한다 → webpack이 클라이언트 번들에 끌어들이지 않음.
 
-import { getClinicOverride } from './db';
+function loadClinicOverride(): Record<string, unknown> | null {
+  if (typeof window !== 'undefined') return null; // 클라이언트에서는 항상 null
+  try {
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    const mod = require('./db') as { getClinicOverride: () => Record<string, unknown> | null };
+    return mod.getClinicOverride();
+  } catch {
+    return null;
+  }
+}
 
 export const CLINIC = {
   name: '한빛내과의원',
@@ -147,12 +160,12 @@ export function applyOverride(over: ClinicEditable | null): EffectiveClinic {
 
 /** 서버 사이드: 현재 DB 상태를 반영한 effective 병원 정보 */
 export function getEffectiveClinic(): EffectiveClinic {
-  return applyOverride(getClinicOverride() as ClinicEditable | null);
+  return applyOverride(loadClinicOverride() as ClinicEditable | null);
 }
 
 /** 현재 편집된 오버라이드 값 (편집 폼 초기값용) */
 export function getCurrentEditable(): ClinicEditable {
-  const over = (getClinicOverride() as ClinicEditable | null) ?? {};
+  const over = (loadClinicOverride() as ClinicEditable | null) ?? {};
   const c = applyOverride(over);
   return {
     name: c.name,
