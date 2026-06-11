@@ -48,7 +48,7 @@ function getDb(): DatabaseSync {
     CREATE INDEX IF NOT EXISTS idx_messages_session ON messages(session_id);
     CREATE INDEX IF NOT EXISTS idx_events_keyword ON events(keyword);
     CREATE TABLE IF NOT EXISTS clinic_config (
-      id         INTEGER PRIMARY KEY CHECK (id = 1),
+      id         INTEGER PRIMARY KEY,
       json       TEXT NOT NULL,
       updated_at TEXT NOT NULL DEFAULT (datetime('now','localtime'))
     );
@@ -98,12 +98,8 @@ export function getClinicOverride(): Record<string, unknown> | null {
 
 export function setClinicOverride(data: Record<string, unknown>): void {
   const json = JSON.stringify(data);
-  getDb()
-    .prepare(
-      `INSERT INTO clinic_config (id, json) VALUES (1, ?)
-       ON CONFLICT(id) DO UPDATE SET json = excluded.json, updated_at = datetime('now','localtime')`,
-    )
-    .run(json);
+  // INSERT OR REPLACE: 단일 행(id=1) 덮어쓰기 — UPSERT보다 단순하고 CHECK 제약 평가 이슈 회피
+  getDb().prepare('INSERT OR REPLACE INTO clinic_config (id, json) VALUES (1, ?)').run(json);
 }
 
 export function addEvent(sessionId: string, keyword: string): void {
