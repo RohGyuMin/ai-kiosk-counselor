@@ -58,9 +58,13 @@ function StreamedText({ text }: { text: string }) {
 export default function ConsultScreen({
   visitor,
   onEnd,
+  theme,
+  onToggleTheme,
 }: {
   visitor: Visitor;
   onEnd: (data: SummaryData) => void;
+  theme: 'light' | 'dark';
+  onToggleTheme: () => void;
 }) {
   const {
     supported,
@@ -264,6 +268,35 @@ export default function ConsultScreen({
               {visitor.anonymous ? '한빛내과의원' : `${visitor.name}님, 환영합니다`}
             </p>
           </div>
+          {/* 테마 토글 (아이콘) */}
+          <button
+            onClick={onToggleTheme}
+            aria-label={theme === 'light' ? '다크 모드로 전환' : '라이트 모드로 전환'}
+            className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-ink/30 text-ink/70 active:scale-95 sm:h-11 sm:w-11 sm:rounded-xl"
+          >
+            {theme === 'light' ? (
+              <svg
+                className="h-4 w-4 sm:h-5 sm:w-5"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+              >
+                <path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8Z" />
+              </svg>
+            ) : (
+              <svg
+                className="h-4 w-4 sm:h-5 sm:w-5"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+              >
+                <circle cx="12" cy="12" r="4" />
+                <path d="M12 2v2m0 16v2M4.9 4.9l1.4 1.4m11.4 11.4 1.4 1.4M2 12h2m16 0h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4" />
+              </svg>
+            )}
+          </button>
           <button
             onClick={() => setLargeText((v) => !v)}
             aria-pressed={largeText}
