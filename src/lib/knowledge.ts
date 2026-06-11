@@ -80,6 +80,55 @@ export const MEDIA: Record<string, { src: string; alt: string }> = {
   overview: { src: '/media/overview.svg', alt: '한빛내과의원 소개' },
 };
 
+/** 한국 시간 기준 현재 시각 + 진료 상태 (LLM이 '지금/오늘' 질문에 정확히 답하도록) */
+export function getNowContext(): string {
+  const now = new Date();
+  const parts = new Intl.DateTimeFormat('en-US', {
+    timeZone: 'Asia/Seoul',
+    weekday: 'short',
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: false,
+  }).formatToParts(now);
+  const get = (t: string) => parts.find((p) => p.type === t)?.value ?? '';
+  const weekdayEn = get('weekday'); // Sun..Sat
+  const hour = parseInt(get('hour'), 10);
+  const minute = parseInt(get('minute'), 10);
+
+  const dayKo: Record<string, string> = {
+    Sun: '일요일',
+    Mon: '월요일',
+    Tue: '화요일',
+    Wed: '수요일',
+    Thu: '목요일',
+    Fri: '금요일',
+    Sat: '토요일',
+  };
+  const day = dayKo[weekdayEn] ?? weekdayEn;
+  const hm = hour + minute / 60;
+
+  let status: string;
+  if (weekdayEn === 'Sun') {
+    status = '오늘은 일요일 휴진입니다';
+  } else if (weekdayEn === 'Sat') {
+    status =
+      hm < 9
+        ? '아직 진료 시작 전입니다 (토요일 09:00 시작)'
+        : hm < 13
+          ? '현재 진료 중입니다 (토요일은 13:00 마감)'
+          : '오늘(토요일) 진료가 종료되었습니다 (13:00 마감)';
+  } else {
+    if (hm < 9) status = '아직 진료 시작 전입니다 (09:00 시작)';
+    else if (hm >= 13 && hm < 14) status = '점심시간 휴진 중입니다 (14:00 진료 재개)';
+    else if (hm < 18) status = '현재 진료 중입니다 (18:00 마감)';
+    else status = '오늘 진료가 종료되었습니다 (18:00 마감)';
+  }
+
+  return `- 지금은 ${day} ${String(hour).padStart(2, '0')}시 ${String(minute).padStart(2, '0')}분 (한국 시간)입니다.
+- 진료 상태: ${status}
+- "지금", "오늘", "현재" 관련 질문은 반드시 위 시각을 기준으로 답하세요. (공휴일 여부는 알 수 없으므로 공휴일이면 휴진임을 덧붙여 안내)`;
+}
+
 /** LLM에 주입할 시스템 프롬프트 */
 export function buildSystemPrompt(): string {
   const depts = CLINIC.departments.map((d) => `- ${d.name}: ${d.desc}`).join('\n');
@@ -143,7 +192,10 @@ ${hrs}
 - 독감: ${CLINIC.vaccination.독감}
 - 폐렴구균: ${CLINIC.vaccination.폐렴구균}
 - 파상풍: ${CLINIC.vaccination.파상풍}
-- 일정·재고 문의는 원무과로 안내`;
+- 일정·재고 문의는 원무과로 안내
+
+[현재 시각]
+${getNowContext()}`;
 }
 
 // ── 폴백(무키/오프라인) 시나리오 ─────────────────────────────

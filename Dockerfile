@@ -31,6 +31,9 @@ FROM node:22-alpine AS runner
 WORKDIR /app
 ENV NODE_ENV=production
 ENV NEXT_TELEMETRY_DISABLED=1
+# 한국 시간대 — JS Date·SQLite 'localtime'이 KST로 동작 (방문 기록·시간 안내 정확화)
+RUN apk add --no-cache tzdata
+ENV TZ=Asia/Seoul
 # node:sqlite 가용성 확보 (Node 22에서 실험적 플래그 필요 시 무해한 보강)
 ENV NODE_OPTIONS=--experimental-sqlite
 
