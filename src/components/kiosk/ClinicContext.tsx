@@ -41,7 +41,7 @@ export function ClinicProvider({ children }: { children: ReactNode }) {
   const [clinic, setClinic] = useState<ClinicView>(DEFAULTS);
   useEffect(() => {
     let alive = true;
-    fetch('/api/clinic')
+    fetch('/api/clinic', { cache: 'no-store' })
       .then((r) => (r.ok ? r.json() : null))
       .then((data) => {
         if (alive && data) setClinic({ ...DEFAULTS, ...data });

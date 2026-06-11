@@ -43,7 +43,7 @@ export default function ClinicEditPage() {
   const load = useCallback(async () => {
     setLoading(true);
     try {
-      const res = await fetch('/api/admin/clinic');
+      const res = await fetch('/api/admin/clinic', { cache: 'no-store' });
       const data = await res.json();
       setForm({ ...EMPTY, ...data });
     } finally {

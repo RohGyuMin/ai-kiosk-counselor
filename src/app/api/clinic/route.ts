@@ -4,6 +4,7 @@ import { NextResponse } from 'next/server';
 import { getEffectiveClinic } from '@/lib/clinic-server';
 
 export const runtime = 'nodejs';
+export const dynamic = 'force-dynamic'; // DB 오버라이드를 매 요청마다 반영 (정적 캐시 금지)
 
 export async function GET() {
   const c = getEffectiveClinic();
