@@ -112,35 +112,41 @@ export default function KioskApp() {
         <SummaryScreen name={visitor?.name ?? ''} summary={summary} onReset={reset} />
       )}
 
-      {/* 테마 토글 — 모든 화면 우하단 */}
+      {/* 테마 토글 — 모든 화면 우하단, 라벨 포함 알약형 */}
       <button
         onClick={toggleTheme}
         aria-label={theme === 'light' ? '다크 모드로 전환' : '라이트 모드로 전환'}
-        className="absolute bottom-4 right-4 z-50 flex h-10 w-10 items-center justify-center rounded-full border border-ink/20 bg-deep/60 text-ink/70 backdrop-blur-sm transition active:scale-95 sm:bottom-6 sm:right-6"
+        className="absolute bottom-4 right-4 z-50 flex items-center gap-2 rounded-full border border-ink/25 bg-deep/70 px-4 py-2.5 text-sm font-medium text-ink/80 shadow-lg backdrop-blur-sm transition hover:bg-deep/90 active:scale-95 sm:bottom-6 sm:right-6 sm:px-5 sm:py-3 sm:text-base"
       >
         {theme === 'light' ? (
-          // 달 (→ 다크로)
-          <svg
-            className="h-5 w-5"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-          >
-            <path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8Z" />
-          </svg>
+          <>
+            {/* 달 (→ 다크로) */}
+            <svg
+              className="h-4 w-4 sm:h-5 sm:w-5"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+            >
+              <path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8Z" />
+            </svg>
+            다크 모드
+          </>
         ) : (
-          // 해 (→ 라이트로)
-          <svg
-            className="h-5 w-5"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-          >
-            <circle cx="12" cy="12" r="4" />
-            <path d="M12 2v2m0 16v2M4.9 4.9l1.4 1.4m11.4 11.4 1.4 1.4M2 12h2m16 0h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4" />
-          </svg>
+          <>
+            {/* 해 (→ 라이트로) */}
+            <svg
+              className="h-4 w-4 sm:h-5 sm:w-5"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+            >
+              <circle cx="12" cy="12" r="4" />
+              <path d="M12 2v2m0 16v2M4.9 4.9l1.4 1.4m11.4 11.4 1.4 1.4M2 12h2m16 0h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4" />
+            </svg>
+            라이트 모드
+          </>
         )}
       </button>
     </main>
