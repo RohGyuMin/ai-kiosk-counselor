@@ -69,6 +69,42 @@ export default function AdminPage() {
       </header>
 
       <main className="mx-auto max-w-6xl space-y-8 px-6 py-8">
+        {/* 인력 절감 효과 카드 — 응대 1건당 1.5분 환산 (영업·운영 보고용) */}
+        {stats && stats.totalMessages > 0 && (
+          <section className="overflow-hidden rounded-xl bg-gradient-to-br from-navy-800 to-navy-900 p-6 text-white shadow-lg">
+            <div className="flex items-start justify-between gap-4">
+              <div className="min-w-0">
+                <p className="text-sm font-medium uppercase tracking-wider text-gold-400/90">
+                  AI 응대 효과
+                </p>
+                <p className="mt-1.5 text-2xl font-bold sm:text-3xl">
+                  접수 인력 약{' '}
+                  <span className="text-gold-400">
+                    {Math.round((stats.totalMessages * 1.5) / 60)}시간{' '}
+                    {Math.round((stats.totalMessages * 1.5) % 60)}분
+                  </span>{' '}
+                  절감
+                </p>
+                <p className="mt-2 text-sm text-white/70 sm:text-base">
+                  누적 응대 {stats.totalMessages.toLocaleString()}건 · 방문자{' '}
+                  {stats.totalVisitors.toLocaleString()}명 · 응대 1건당 평균 1.5분 환산
+                </p>
+              </div>
+              <div className="hidden shrink-0 rounded-lg bg-white/10 p-3 sm:block">
+                <svg
+                  className="h-7 w-7 text-gold-400"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                >
+                  <path d="M12 8v4l3 3M3 12a9 9 0 1 0 18 0 9 9 0 0 0-18 0Z" />
+                </svg>
+              </div>
+            </div>
+          </section>
+        )}
+
         {/* 통계 카드 */}
         <section className="grid grid-cols-3 gap-4">
           <StatCard label="방문자 수" value={stats?.totalVisitors ?? 0} suffix="명" />

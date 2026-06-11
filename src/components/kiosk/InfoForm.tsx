@@ -23,6 +23,7 @@ export default function InfoForm({
   const [name, setName] = useState('');
   const [phone, setPhone] = useState(''); // digits only
   const [consent, setConsent] = useState(false);
+  const [policyOpen, setPolicyOpen] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState('');
 
@@ -95,17 +96,37 @@ export default function InfoForm({
           {phone ? formatPhone(phone) : <span className="text-ink/30">010-0000-0000</span>}
         </div>
 
-        <label className="mt-4 flex cursor-pointer items-start gap-3 text-ink/80 sm:mt-6 sm:items-center">
-          <input
-            type="checkbox"
-            checked={consent}
-            onChange={(e) => setConsent(e.target.checked)}
-            className="mt-1 h-5 w-5 shrink-0 accent-gold-500 sm:mt-0 sm:h-6 sm:w-6"
-          />
-          <span className="text-sm sm:text-base">
-            개인정보 수집·이용에 동의합니다. (진료 안내 및 예약 확인 목적)
-          </span>
-        </label>
+        {/* 개인정보 수집 동의 — 항목·목적·보관기간 명시 + 전체 보기 모달 */}
+        <div className="mt-4 rounded-xl border border-ink/15 bg-ink/5 p-4 text-sm text-ink/80 sm:mt-6">
+          <label className="flex cursor-pointer items-start gap-3">
+            <input
+              type="checkbox"
+              checked={consent}
+              onChange={(e) => setConsent(e.target.checked)}
+              className="mt-0.5 h-5 w-5 shrink-0 accent-gold-500 sm:h-6 sm:w-6"
+            />
+            <div className="min-w-0">
+              <p className="font-semibold text-ink">
+                개인정보 수집·이용에 동의합니다 <span className="text-red-500">*</span>
+              </p>
+              <p className="mt-1.5 text-xs leading-relaxed text-ink/70 sm:text-sm">
+                <span className="font-medium">수집 항목</span> 성함, 연락처 &nbsp;·&nbsp;{' '}
+                <span className="font-medium">목적</span> 진료 안내 및 예약 확인 &nbsp;·&nbsp;{' '}
+                <span className="font-medium">보관</span> 1년 후 자동 파기
+              </p>
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.preventDefault();
+                  setPolicyOpen(true);
+                }}
+                className="mt-1.5 text-xs text-ink/60 underline hover:text-ink"
+              >
+                전체 내용 보기
+              </button>
+            </div>
+          </label>
+        </div>
 
         {error && <p className="mt-4 text-sm text-red-400 sm:text-base">{error}</p>}
 
@@ -147,6 +168,104 @@ export default function InfoForm({
           ))}
         </div>
       </div>
+
+      {/* 처리방침 모달 */}
+      {policyOpen && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4 sm:p-6"
+          onClick={() => setPolicyOpen(false)}
+        >
+          <div
+            onClick={(e) => e.stopPropagation()}
+            className="max-h-[85vh] w-full max-w-2xl overflow-y-auto rounded-2xl bg-white p-6 text-slate-800 shadow-2xl sm:p-8"
+          >
+            <div className="mb-4 flex items-start justify-between gap-4">
+              <h3 className="text-lg font-bold text-navy-900 sm:text-xl">
+                개인정보 수집·이용 동의
+              </h3>
+              <button
+                onClick={() => setPolicyOpen(false)}
+                className="shrink-0 rounded-md p-1 text-slate-400 hover:bg-slate-100 hover:text-slate-700"
+                aria-label="닫기"
+              >
+                <svg
+                  className="h-5 w-5"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                >
+                  <path d="M18 6 6 18M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+            <div className="space-y-4 text-sm leading-relaxed">
+              <Item label="1. 수집·이용 목적">
+                · 진료 안내 및 대기 호출
+                <br />· 예약 확인·변경 안내
+                <br />· 진료 후 안내·재방문 안내
+              </Item>
+              <Item label="2. 수집 항목">
+                필수 — 성함, 휴대전화번호
+                <br />
+                선택 — 없음
+              </Item>
+              <Item label="3. 보유·이용 기간">
+                동의일로부터 <span className="font-semibold">1년</span> (마지막 진료일 기준)
+                <br />
+                목적 달성 후 또는 동의 철회 시 즉시 파기합니다.
+              </Item>
+              <Item label="4. 파기 방법">
+                전자적 파일 — 복구·재생할 수 없는 방법으로 영구 삭제
+                <br />
+                출력물 — 분쇄 또는 소각
+              </Item>
+              <Item label="5. 동의 거부 권리 및 불이익">
+                동의를 거부하실 수 있습니다. 다만 본 키오스크를 통한 자동 안내·예약 확인 서비스는
+                제한될 수 있으며, 원무과를 통해 직접 이용하실 수 있습니다.
+                <br />
+                <span className="text-slate-500">
+                  ※{' '}
+                  <a href="/" className="underline">
+                    대기 화면 → &lsquo;안내만 받기&rsquo;
+                  </a>{' '}
+                  로 개인정보 없이 둘러보실 수도 있습니다.
+                </span>
+              </Item>
+              <Item label="6. 제3자 제공">
+                수집한 정보는 외부에 제공하지 않습니다. (법령에 의한 경우 제외)
+              </Item>
+              <Item label="7. 문의처">개인정보 보호책임자 — 원무과 ☎ 02-123-4567</Item>
+            </div>
+            <div className="mt-6 flex gap-3">
+              <button
+                onClick={() => {
+                  setConsent(true);
+                  setPolicyOpen(false);
+                }}
+                className="flex-1 rounded-lg bg-gold-500 px-4 py-2.5 text-sm font-semibold text-navy-900 active:scale-95"
+              >
+                동의하고 닫기
+              </button>
+              <button
+                onClick={() => setPolicyOpen(false)}
+                className="rounded-lg border border-slate-300 px-4 py-2.5 text-sm text-slate-700 hover:bg-slate-50"
+              >
+                닫기
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function Item({ label, children }: { label: string; children: React.ReactNode }) {
+  return (
+    <div>
+      <p className="font-semibold text-navy-900">{label}</p>
+      <p className="mt-1 text-slate-700">{children}</p>
     </div>
   );
 }
