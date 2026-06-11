@@ -46,6 +46,12 @@ export default function AdminPage() {
             <p className="text-sm text-slate-500">한빛내과의원 · AI 안내 키오스크</p>
           </div>
           <div className="flex gap-2">
+            <a
+              href="/admin/clinic"
+              className="rounded-lg border border-navy-800 px-4 py-2 text-sm font-semibold text-navy-800 hover:bg-navy-800/5"
+            >
+              병원 정보 편집
+            </a>
             <button
               onClick={load}
               className="rounded-lg border px-4 py-2 text-sm hover:bg-slate-50"

@@ -4,6 +4,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import Image from 'next/image';
 import { MEDIA, SUGGESTED_QUESTIONS, buildGreeting, getFollowupSuggestions } from '@/lib/knowledge';
+import { useClinic } from './ClinicContext';
 import { useSpeech } from '@/lib/speech';
 import type { ChatMessage, ChatResponse } from '@/lib/types';
 import type { SummaryData, Visitor } from './KioskApp';
@@ -66,6 +67,7 @@ export default function ConsultScreen({
   theme: 'light' | 'dark';
   onToggleTheme: () => void;
 }) {
+  const CLINIC = useClinic();
   const {
     supported,
     listening,
@@ -118,10 +120,14 @@ export default function ConsultScreen({
     if (greetedRef.current) return;
     greetedRef.current = true;
     unlockAudio();
-    const greeting = buildGreeting({ name: visitor.name, anonymous: visitor.anonymous });
+    const greeting = buildGreeting({
+      name: visitor.name,
+      anonymous: visitor.anonymous,
+      brand: CLINIC.name,
+    });
     setMessages([{ role: 'assistant', content: greeting, source: 'llm' }]);
     void speak(greeting).then(autoListen);
-  }, [unlockAudio, speak, autoListen, visitor.name, visitor.anonymous]);
+  }, [unlockAudio, speak, autoListen, visitor.name, visitor.anonymous, CLINIC.name]);
 
   const ask = useCallback(
     async (question: string) => {
@@ -265,7 +271,7 @@ export default function ConsultScreen({
               </p>
             </div>
             <p className="mt-0.5 truncate text-base font-semibold text-ink sm:text-xl">
-              {visitor.anonymous ? '한빛내과의원' : `${visitor.name}님, 환영합니다`}
+              {visitor.anonymous ? CLINIC.name : `${visitor.name}님, 환영합니다`}
             </p>
           </div>
           {/* 테마 토글 (아이콘) */}
@@ -331,8 +337,8 @@ export default function ConsultScreen({
             <div className="mt-2 rounded-2xl bg-ink/5 p-4 text-ink/80 sm:mt-4 sm:p-6">
               <p className={largeText ? 'text-xl sm:text-2xl' : 'text-base sm:text-xl'}>
                 {visitor.anonymous
-                  ? '안녕하세요, 한빛내과의원 AI 안내입니다.'
-                  : `안녕하세요, ${visitor.name}님. 한빛내과의원 AI 안내입니다.`}
+                  ? `안녕하세요, ${CLINIC.name} AI 안내입니다.`
+                  : `안녕하세요, ${visitor.name}님. ${CLINIC.name} AI 안내입니다.`}
               </p>
               <p
                 className={`mt-2 text-ink/60 ${largeText ? 'text-lg sm:text-xl' : 'text-sm sm:text-base'}`}

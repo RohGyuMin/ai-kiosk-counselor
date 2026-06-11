@@ -2,6 +2,11 @@
 //
 // 이 데이터가 (1) LLM 시스템 프롬프트의 근거가 되고,
 // (2) LLM을 못 쓸 때의 폴백(FAQ) 답변 근거도 된다.
+//
+// 관리자에서 편집된 값이 있으면 (clinic_config DB) 그 값이 우선 사용된다 —
+// getEffectiveClinic() 참조. 시스템 프롬프트는 buildSystemPrompt(async)에서 적용.
+
+import { getClinicOverride } from './db';
 
 export const CLINIC = {
   name: '한빛내과의원',
@@ -80,6 +85,90 @@ export const MEDIA: Record<string, { src: string; alt: string }> = {
   overview: { src: '/media/overview.svg', alt: '한빛내과의원 소개' },
 };
 
+// 관리자에서 자가편집 가능한 핵심 필드(미팅 30초 안에 입력하는 양). 그 외는 정적 기본값 유지.
+export interface ClinicEditable {
+  name?: string;
+  slogan?: string;
+  director?: string;
+  location?: string;
+  nearbyStation?: string;
+  parking?: string;
+  phone?: string;
+  hoursWeekday?: string;
+  hoursSaturday?: string;
+  hoursLunch?: string;
+  hoursSunday?: string;
+}
+
+/** 정적 CLINIC + DB 오버라이드를 머지한 "실제 사용될" 병원 정보 */
+export interface EffectiveClinic {
+  name: string;
+  slogan: string;
+  director: string;
+  location: string;
+  nearbyStation: string;
+  parking: string;
+  phone: string;
+  departments: typeof CLINIC.departments;
+  hours: { 평일: string; 토요일: string; 점심시간: string; 일요일공휴일: string };
+  reception: typeof CLINIC.reception;
+  insurance: typeof CLINIC.insurance;
+  symptomGuide: typeof CLINIC.symptomGuide;
+  appointment: typeof CLINIC.appointment;
+  prescription: typeof CLINIC.prescription;
+  vaccination: typeof CLINIC.vaccination;
+}
+
+export function applyOverride(over: ClinicEditable | null): EffectiveClinic {
+  const o = over ?? {};
+  return {
+    name: o.name?.trim() || CLINIC.name,
+    slogan: o.slogan?.trim() || CLINIC.slogan,
+    director: o.director?.trim() || CLINIC.director,
+    location: o.location?.trim() || CLINIC.location,
+    nearbyStation: o.nearbyStation?.trim() || CLINIC.nearbyStation,
+    parking: o.parking?.trim() || CLINIC.parking,
+    phone: o.phone?.trim() || CLINIC.phone,
+    departments: CLINIC.departments,
+    hours: {
+      평일: o.hoursWeekday?.trim() || CLINIC.hours.평일,
+      토요일: o.hoursSaturday?.trim() || CLINIC.hours.토요일,
+      점심시간: o.hoursLunch?.trim() || CLINIC.hours.점심시간,
+      일요일공휴일: o.hoursSunday?.trim() || CLINIC.hours.일요일공휴일,
+    },
+    reception: CLINIC.reception,
+    insurance: CLINIC.insurance,
+    symptomGuide: CLINIC.symptomGuide,
+    appointment: CLINIC.appointment,
+    prescription: CLINIC.prescription,
+    vaccination: CLINIC.vaccination,
+  };
+}
+
+/** 서버 사이드: 현재 DB 상태를 반영한 effective 병원 정보 */
+export function getEffectiveClinic(): EffectiveClinic {
+  return applyOverride(getClinicOverride() as ClinicEditable | null);
+}
+
+/** 현재 편집된 오버라이드 값 (편집 폼 초기값용) */
+export function getCurrentEditable(): ClinicEditable {
+  const over = (getClinicOverride() as ClinicEditable | null) ?? {};
+  const c = applyOverride(over);
+  return {
+    name: c.name,
+    slogan: c.slogan,
+    director: c.director,
+    location: c.location,
+    nearbyStation: c.nearbyStation,
+    parking: c.parking,
+    phone: c.phone,
+    hoursWeekday: c.hours.평일,
+    hoursSaturday: c.hours.토요일,
+    hoursLunch: c.hours.점심시간,
+    hoursSunday: c.hours.일요일공휴일,
+  };
+}
+
 /** 한국 시간 기준 현재 시각 + 진료 상태 (LLM이 '지금/오늘' 질문에 정확히 답하도록) */
 export function getNowContext(): string {
   const now = new Date();
@@ -129,14 +218,15 @@ export function getNowContext(): string {
 - "지금", "오늘", "현재" 관련 질문은 반드시 위 시각을 기준으로 답하세요. (공휴일 여부는 알 수 없으므로 공휴일이면 휴진임을 덧붙여 안내)`;
 }
 
-/** LLM에 주입할 시스템 프롬프트 */
+/** LLM에 주입할 시스템 프롬프트 — DB 오버라이드 적용 */
 export function buildSystemPrompt(): string {
-  const depts = CLINIC.departments.map((d) => `- ${d.name}: ${d.desc}`).join('\n');
-  const hrs = Object.entries(CLINIC.hours)
+  const c = getEffectiveClinic();
+  const depts = c.departments.map((d) => `- ${d.name}: ${d.desc}`).join('\n');
+  const hrs = Object.entries(c.hours)
     .map(([k, v]) => `- ${k}: ${v}`)
     .join('\n');
 
-  return `당신은 '${CLINIC.name}'에 설치된 AI 안내 키오스크입니다.
+  return `당신은 '${c.name}'에 설치된 AI 안내 키오스크입니다.
 내원객의 진료·접수·위치 관련 질문에 친절하고 간결하게 한국어로 답합니다.
 
 [응대 원칙]
@@ -147,12 +237,12 @@ export function buildSystemPrompt(): string {
 - 후속 질문 권유는 하지 않음 (사용자가 충분히 듣고 다음을 결정).
 
 [병원 개요]
-- 이름: ${CLINIC.name}
-- 원장: ${CLINIC.director}
-- 위치: ${CLINIC.location} (${CLINIC.nearbyStation})
-- 주차: ${CLINIC.parking}
-- 전화: ${CLINIC.phone}
-- 슬로건: ${CLINIC.slogan}
+- 이름: ${c.name}
+- 원장: ${c.director}
+- 위치: ${c.location} (${c.nearbyStation})
+- 주차: ${c.parking}
+- 전화: ${c.phone}
+- 슬로건: ${c.slogan}
 
 [진료과목]
 ${depts}
@@ -161,37 +251,37 @@ ${depts}
 ${hrs}
 
 [접수 안내]
-- 예약: ${CLINIC.reception.예약}
-- 현장접수: ${CLINIC.reception.현장접수}
-- 준비물: ${CLINIC.reception.준비물}
+- 예약: ${c.reception.예약}
+- 현장접수: ${c.reception.현장접수}
+- 준비물: ${c.reception.준비물}
 
 [보험·비용]
-- 건강보험: ${CLINIC.insurance.건강보험}
-- 비급여: ${CLINIC.insurance.비급여}
-- 기타: ${CLINIC.insurance.산재의보}
+- 건강보험: ${c.insurance.건강보험}
+- 비급여: ${c.insurance.비급여}
+- 기타: ${c.insurance.산재의보}
 
 [증상 관련 응대 원칙]
 - 진단·처방은 절대 하지 않음. 적합한 진료과/방문 권유만.
-- 응급 상황(${CLINIC.symptomGuide.응급})으로 추정되면 "즉시 119 또는 응급실 이용을 권합니다"로 안내.
-- 내과 영역: ${CLINIC.symptomGuide.내과대상}
-- 소아(만 18세 이하): ${CLINIC.symptomGuide.소아대상}
-- 기존 환자의 재처방: ${CLINIC.symptomGuide.재방문}
+- 응급 상황(${c.symptomGuide.응급})으로 추정되면 "즉시 119 또는 응급실 이용을 권합니다"로 안내.
+- 내과 영역: ${c.symptomGuide.내과대상}
+- 소아(만 18세 이하): ${c.symptomGuide.소아대상}
+- 기존 환자의 재처방: ${c.symptomGuide.재방문}
 
 [예약 안내]
 - 네이버 예약/똑닥 앱/전화 예약 가능, 당일 예약 당일 진료
-- ${CLINIC.appointment.당일진료}
-- 변경/취소: ${CLINIC.appointment.취소변경}
+- ${c.appointment.당일진료}
+- 변경/취소: ${c.appointment.취소변경}
 
 [처방·약]
-- ${CLINIC.prescription.원칙}
-- 만성 질환 처방 주기: ${CLINIC.prescription.재방문주기}
-- 처방전 분실 시: ${CLINIC.prescription.분실}
-- 인근 약국: ${CLINIC.prescription.조제}
+- ${c.prescription.원칙}
+- 만성 질환 처방 주기: ${c.prescription.재방문주기}
+- 처방전 분실 시: ${c.prescription.분실}
+- 인근 약국: ${c.prescription.조제}
 
 [예방접종]
-- 독감: ${CLINIC.vaccination.독감}
-- 폐렴구균: ${CLINIC.vaccination.폐렴구균}
-- 파상풍: ${CLINIC.vaccination.파상풍}
+- 독감: ${c.vaccination.독감}
+- 폐렴구균: ${c.vaccination.폐렴구균}
+- 파상풍: ${c.vaccination.파상풍}
 - 일정·재고 문의는 원무과로 안내
 
 [현재 시각]
@@ -317,7 +407,13 @@ export function inferImageKey(message: string): string | undefined {
 }
 
 /** 시간대 + 이름 + 익명 여부에 따라 다양한 인사를 생성 */
-export function buildGreeting(opts: { name?: string; anonymous?: boolean; hour?: number }): string {
+export function buildGreeting(opts: {
+  name?: string;
+  anonymous?: boolean;
+  hour?: number;
+  brand?: string;
+}): string {
+  const brand = opts.brand || CLINIC.name;
   const h = opts.hour ?? new Date().getHours();
   const slot =
     h < 6
@@ -346,14 +442,14 @@ export function buildGreeting(opts: { name?: string; anonymous?: boolean; hour?:
 
   if (opts.anonymous) {
     return slot === '이른 새벽' || slot === '늦은 저녁'
-      ? `안녕하세요, 한빛내과의원 AI 안내입니다. ${closer}`
-      : `${timeOpener}에도 한빛내과의원을 찾아 주셔서 감사합니다. ${closer}`;
+      ? `안녕하세요, ${brand} AI 안내입니다. ${closer}`
+      : `${timeOpener}에도 ${brand}을(를) 찾아 주셔서 감사합니다. ${closer}`;
   }
   const name = (opts.name || '').trim();
-  if (!name) return `안녕하세요, 한빛내과의원 AI 안내입니다. ${closer}`;
+  if (!name) return `안녕하세요, ${brand} AI 안내입니다. ${closer}`;
   return slot === '이른 새벽' || slot === '늦은 저녁'
-    ? `${name}님, 한빛내과의원 AI 안내입니다. ${closer}`
-    : `${name}님, ${timeOpener}에 한빛내과의원을 찾아 주셔서 감사합니다. ${closer}`;
+    ? `${name}님, ${brand} AI 안내입니다. ${closer}`
+    : `${name}님, ${timeOpener}에 ${brand}을(를) 찾아 주셔서 감사합니다. ${closer}`;
 }
 
 /** 초기(대화 시작 시) 표시되는 추천 질문 */

@@ -9,6 +9,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import QRCode from 'qrcode';
 import type { SummaryData } from './KioskApp';
+import { useClinic } from './ClinicContext';
 
 const DEPT_BY_KEYWORD: Record<string, string> = {
   '진료과/전문': '내과',
@@ -45,6 +46,7 @@ export default function SummaryScreen({
   summary: SummaryData;
   onReset: () => void;
 }) {
+  const CLINIC = useClinic();
   const [issued, setIssued] = useState(false);
   const [qrUrl, setQrUrl] = useState<string | null>(null);
 
@@ -71,11 +73,11 @@ export default function SummaryScreen({
   // QR 생성 — 폰 카메라로 스캔하면 번호표 정보가 텍스트로 저장됨
   useEffect(() => {
     const text = [
-      '[한빛내과의원 대기 번호표]',
+      `[${CLINIC.name} 대기 번호표]`,
       `번호: ${ticket.letter}-${ticket.number}`,
       `진료과: ${department}`,
       `앞 대기: ${waitingAhead}명 / 예상 약 ${estimatedWait}분`,
-      '문의: 02-123-4567',
+      `문의: ${CLINIC.phone}`,
     ].join('\n');
     QRCode.toDataURL(text, {
       width: 160,
@@ -84,7 +86,7 @@ export default function SummaryScreen({
     })
       .then(setQrUrl)
       .catch(() => setQrUrl(null));
-  }, [ticket, department, waitingAhead, estimatedWait]);
+  }, [ticket, department, waitingAhead, estimatedWait, CLINIC.name, CLINIC.phone]);
 
   return (
     <div className="flex h-full w-full flex-col items-center justify-center px-6 text-center">
@@ -121,7 +123,7 @@ export default function SummaryScreen({
 
             <div className="px-6 py-8 sm:px-8 sm:py-10">
               <p className="text-sm font-semibold tracking-[0.3em] text-navy-700/70 sm:text-base">
-                한빛내과의원
+                {CLINIC.name}
               </p>
               <p className="mt-1 text-xs text-navy-700/50 sm:text-sm">
                 대기 번호표 · WAITING TICKET

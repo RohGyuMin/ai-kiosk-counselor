@@ -47,6 +47,11 @@ function getDb(): DatabaseSync {
     );
     CREATE INDEX IF NOT EXISTS idx_messages_session ON messages(session_id);
     CREATE INDEX IF NOT EXISTS idx_events_keyword ON events(keyword);
+    CREATE TABLE IF NOT EXISTS clinic_config (
+      id         INTEGER PRIMARY KEY CHECK (id = 1),
+      json       TEXT NOT NULL,
+      updated_at TEXT NOT NULL DEFAULT (datetime('now','localtime'))
+    );
   `);
 
   _db = db;
@@ -76,6 +81,29 @@ export function addMessage(
   getDb()
     .prepare('INSERT INTO messages (session_id, role, content, source) VALUES (?, ?, ?, ?)')
     .run(sessionId, role, content, source);
+}
+
+/** 관리자에서 편집된 병원 정보 오버라이드 — 한 행(id=1). 없으면 null */
+export function getClinicOverride(): Record<string, unknown> | null {
+  const row = getDb().prepare('SELECT json FROM clinic_config WHERE id = 1').get() as
+    | { json: string }
+    | undefined;
+  if (!row) return null;
+  try {
+    return JSON.parse(row.json) as Record<string, unknown>;
+  } catch {
+    return null;
+  }
+}
+
+export function setClinicOverride(data: Record<string, unknown>): void {
+  const json = JSON.stringify(data);
+  getDb()
+    .prepare(
+      `INSERT INTO clinic_config (id, json) VALUES (1, ?)
+       ON CONFLICT(id) DO UPDATE SET json = excluded.json, updated_at = datetime('now','localtime')`,
+    )
+    .run(json);
 }
 
 export function addEvent(sessionId: string, keyword: string): void {

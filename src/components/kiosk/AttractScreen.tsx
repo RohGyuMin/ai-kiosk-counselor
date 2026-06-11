@@ -4,7 +4,7 @@
 //  ① 접수까지 진행 (이름·연락처 입력 → 안내 → 번호표 발급)
 //  ② 안내만 받기 (둘러보기 — 개인정보 입력 없이 바로 상담만)
 
-import { CLINIC } from '@/lib/knowledge';
+import { useClinic } from './ClinicContext';
 
 export default function AttractScreen({
   onStartReception,
@@ -13,6 +13,7 @@ export default function AttractScreen({
   onStartReception: () => void;
   onBrowse: () => void;
 }) {
+  const CLINIC = useClinic();
   return (
     <div className="relative flex h-full w-full flex-col items-center justify-center px-6 text-center">
       <div className="animate-fade-up max-w-3xl">
