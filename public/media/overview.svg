@@ -34,8 +34,9 @@
       <rect y="116" width="280" height="58" fill="#c8a86a" opacity="0.16"/>
       <line x1="0" y1="174" x2="280" y2="174" stroke="#c8a86a" stroke-opacity="0.6"/>
       <text x="20" y="152" fill="#d8bd85" font-size="14" font-weight="700">3F</text>
-      <g fill="#d8bd85" opacity="0.85"><rect x="60" y="130" width="36" height="32"/><rect x="108" y="130" width="36" height="32"/><rect x="156" y="130" width="36" height="32"/><rect x="204" y="130" width="36" height="32"/></g>
-      <text x="260" y="152" fill="#d8bd85" font-size="13" text-anchor="end" font-weight="700">한빛내과의원</text>
+      <g fill="#d8bd85" opacity="0.85"><rect x="60" y="130" width="36" height="32"/><rect x="108" y="130" width="36" height="32"/></g>
+      <rect x="156" y="130" width="112" height="32" rx="4" fill="#0b1733" opacity="0.85"/>
+      <text x="212" y="151" fill="#d8bd85" font-size="13" text-anchor="middle" font-weight="700">한빛내과의원</text>
 
       <!-- 2층 -->
       <line x1="0" y1="232" x2="280" y2="232" stroke="#c8a86a" stroke-opacity="0.25"/>
