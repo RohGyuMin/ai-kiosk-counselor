@@ -61,6 +61,8 @@ export default function ConsultScreen({
   const [imageKey, setImageKey] = useState<string>('overview');
   // 직전 답변 키워드 — 추천 질문 갱신용
   const [lastKeyword, setLastKeyword] = useState<string | undefined>(undefined);
+  // 큰 글자 모드 (고령 사용자 접근성)
+  const [largeText, setLargeText] = useState(false);
   const topicsRef = useRef<Set<string>>(new Set());
   const scrollRef = useRef<HTMLDivElement>(null);
   // StrictMode 이중 마운트 / 재렌더에 대비한 인사 1회 가드
@@ -262,6 +264,18 @@ export default function ConsultScreen({
             </p>
           </div>
           <button
+            onClick={() => setLargeText((v) => !v)}
+            aria-pressed={largeText}
+            title="큰 글자 모드"
+            className={`shrink-0 rounded-lg border px-3 py-2 text-sm active:scale-95 sm:rounded-xl sm:px-4 sm:py-3 sm:text-base ${
+              largeText
+                ? 'border-gold-400 bg-gold-500 font-bold text-navy-900'
+                : 'border-cream/30 text-cream/80'
+            }`}
+          >
+            가<span className="align-super text-[0.7em]">+</span>
+          </button>
+          <button
             onClick={() =>
               onEnd({
                 questionCount: messages.filter((m) => m.role === 'user').length,
@@ -281,12 +295,14 @@ export default function ConsultScreen({
         >
           {messages.length === 0 && (
             <div className="mt-2 rounded-2xl bg-cream/5 p-4 text-cream/80 sm:mt-4 sm:p-6">
-              <p className="text-base sm:text-xl">
+              <p className={largeText ? 'text-xl sm:text-2xl' : 'text-base sm:text-xl'}>
                 {visitor.anonymous
                   ? '안녕하세요, 한빛내과의원 AI 안내입니다.'
                   : `안녕하세요, ${visitor.name}님. 한빛내과의원 AI 안내입니다.`}
               </p>
-              <p className="mt-2 text-sm text-cream/60 sm:text-base">
+              <p
+                className={`mt-2 text-cream/60 ${largeText ? 'text-lg sm:text-xl' : 'text-sm sm:text-base'}`}
+              >
                 아래 추천 질문을 누르거나, 마이크 버튼을 눌러 음성으로 물어보세요.
               </p>
             </div>
@@ -294,9 +310,9 @@ export default function ConsultScreen({
           {messages.map((m, i) => (
             <div key={i} className={`flex ${m.role === 'user' ? 'justify-end' : 'justify-start'}`}>
               <div
-                className={`animate-fade-up max-w-[80%] break-words rounded-2xl px-4 py-3 text-base leading-relaxed [overflow-wrap:anywhere] sm:px-5 sm:py-4 sm:text-lg ${
-                  m.role === 'user' ? 'bg-gold-500 text-navy-900' : 'bg-cream/10 text-cream'
-                }`}
+                className={`animate-fade-up max-w-[80%] break-words rounded-2xl px-4 py-3 leading-relaxed [overflow-wrap:anywhere] sm:px-5 sm:py-4 ${
+                  largeText ? 'text-xl sm:text-2xl' : 'text-base sm:text-lg'
+                } ${m.role === 'user' ? 'bg-gold-500 text-navy-900' : 'bg-cream/10 text-cream'}`}
               >
                 {m.role === 'assistant' && m.stream ? <StreamedText text={m.content} /> : m.content}
                 {m.role === 'assistant' && m.source === 'fallback' && (
@@ -344,7 +360,11 @@ export default function ConsultScreen({
               key={q}
               onClick={() => ask(q)}
               disabled={loading}
-              className="shrink-0 whitespace-nowrap rounded-full border border-gold-500/40 px-3 py-1.5 text-xs text-cream/80 transition hover:bg-cream/10 active:scale-95 disabled:opacity-40 sm:px-4 sm:py-2 sm:text-sm"
+              className={`shrink-0 whitespace-nowrap rounded-full border border-gold-500/40 text-cream/80 transition hover:bg-cream/10 active:scale-95 disabled:opacity-40 ${
+                largeText
+                  ? 'px-4 py-2.5 text-base sm:px-5 sm:py-3 sm:text-lg'
+                  : 'px-3 py-1.5 text-xs sm:px-4 sm:py-2 sm:text-sm'
+              }`}
             >
               {q}
             </button>
