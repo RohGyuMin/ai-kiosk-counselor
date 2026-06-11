@@ -1,12 +1,15 @@
 // 수집 데이터 엑셀(.xlsx) 추출
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import * as XLSX from 'xlsx';
 import { exportRows } from '@/lib/db';
+import { checkAdminAuth } from '@/lib/admin-auth';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
-export async function GET() {
+export async function GET(req: NextRequest) {
+  const denied = checkAdminAuth(req);
+  if (denied) return denied;
   const rows = exportRows();
   const ws = XLSX.utils.json_to_sheet(rows);
   ws['!cols'] = [{ wch: 12 }, { wch: 16 }, { wch: 8 }, { wch: 22 }, { wch: 8 }];

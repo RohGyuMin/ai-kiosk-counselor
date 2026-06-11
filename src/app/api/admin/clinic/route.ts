@@ -4,14 +4,19 @@ import { NextRequest, NextResponse } from 'next/server';
 import { type ClinicEditable } from '@/lib/knowledge';
 import { getCurrentEditable } from '@/lib/clinic-server';
 import { setClinicOverride } from '@/lib/db';
+import { checkAdminAuth } from '@/lib/admin-auth';
 
 export const runtime = 'nodejs';
 
-export async function GET() {
+export async function GET(req: NextRequest) {
+  const denied = checkAdminAuth(req);
+  if (denied) return denied;
   return NextResponse.json(getCurrentEditable());
 }
 
 export async function PUT(req: NextRequest) {
+  const denied = checkAdminAuth(req);
+  if (denied) return denied;
   try {
     const body = (await req.json()) as ClinicEditable;
     // 화이트리스트만 저장 (예상 외 키 차단)

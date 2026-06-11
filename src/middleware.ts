@@ -29,5 +29,6 @@ export function middleware(req: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/admin/:path*', '/admin', '/api/admin/:path*', '/api/admin'],
+  // API는 라우트 안에서 자체 인증한다 (미들웨어가 본문 있는 요청과 충돌하는 케이스 회피)
+  matcher: ['/admin/:path*', '/admin'],
 };
