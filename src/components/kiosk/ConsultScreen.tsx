@@ -61,11 +61,15 @@ export default function ConsultScreen({
   onEnd,
   theme,
   onToggleTheme,
+  voiceEnabled,
+  onToggleVoice,
 }: {
   visitor: Visitor;
   onEnd: (data: SummaryData) => void;
   theme: 'light' | 'dark';
   onToggleTheme: () => void;
+  voiceEnabled: boolean;
+  onToggleVoice: () => void;
 }) {
   const CLINIC = useClinic();
   const {
@@ -87,8 +91,9 @@ export default function ConsultScreen({
   const [lastKeyword, setLastKeyword] = useState<string | undefined>(undefined);
   // 큰 글자 모드 (고령 사용자 접근성)
   const [largeText, setLargeText] = useState(false);
-  // 키오스크(lg+)에서 텍스트 입력창 표시 여부 — 기본은 음성 중심이라 숨김
-  const [showKeyboard, setShowKeyboard] = useState(false);
+  // 키오스크(lg+)에서 텍스트 입력창 표시 여부 — 기본은 음성 중심이라 숨김.
+  // 음성이 꺼져있으면 자동으로 보임 (음성 OFF 모드 = 텍스트 입력이 메인 경로).
+  const [showKeyboard, setShowKeyboard] = useState(!voiceEnabled);
   const topicsRef = useRef<Set<string>>(new Set());
   const scrollRef = useRef<HTMLDivElement>(null);
   // StrictMode 이중 마운트 / 재렌더에 대비한 인사 1회 가드
@@ -101,11 +106,11 @@ export default function ConsultScreen({
   /** 답변 음성이 정상 종료되면 자동으로 마이크를 켜 다음 질문을 기다린다 (대화형 핑퐁) */
   const autoListen = useCallback(
     (done: boolean) => {
-      if (done && supportedRef.current) {
+      if (done && supportedRef.current && voiceEnabled) {
         startListening((text) => askRef.current(text));
       }
     },
-    [startListening],
+    [startListening, voiceEnabled],
   );
 
   useEffect(() => {
@@ -126,8 +131,8 @@ export default function ConsultScreen({
       brand: CLINIC.name,
     });
     setMessages([{ role: 'assistant', content: greeting, source: 'llm' }]);
-    void speak(greeting).then(autoListen);
-  }, [unlockAudio, speak, autoListen, visitor.name, visitor.anonymous, CLINIC.name]);
+    if (voiceEnabled) void speak(greeting).then(autoListen);
+  }, [unlockAudio, speak, autoListen, visitor.name, visitor.anonymous, CLINIC.name, voiceEnabled]);
 
   const ask = useCallback(
     async (question: string) => {
@@ -154,19 +159,19 @@ export default function ConsultScreen({
           topicsRef.current.add(data.keyword);
           setLastKeyword(data.keyword);
         }
-        void speak(data.answer).then(autoListen); // 음성 종료 후 자동 청취
+        if (voiceEnabled) void speak(data.answer).then(autoListen); // 음성 종료 후 자동 청취
       } catch {
         const errMsg = '죄송합니다. 잠시 후 다시 시도해 주세요.';
         setMessages((prev) => [
           ...prev,
           { role: 'assistant', content: errMsg, source: 'fallback', stream: true },
         ]);
-        void speak(errMsg).then(autoListen); // 에러 상황에서도 음성은 출력 (사용자가 침묵을 보지 않도록)
+        if (voiceEnabled) void speak(errMsg).then(autoListen); // 에러 상황에서도 음성은 출력
       } finally {
         setLoading(false);
       }
     },
-    [loading, messages, visitor.sessionId, speak, stopSpeaking, autoListen],
+    [loading, messages, visitor.sessionId, speak, stopSpeaking, autoListen, voiceEnabled],
   );
   askRef.current = ask;
 
@@ -274,6 +279,44 @@ export default function ConsultScreen({
               {visitor.anonymous ? CLINIC.name : `${visitor.name}님, 환영합니다`}
             </p>
           </div>
+          {/* 음성 ON/OFF 토글 (아이콘) — 시끄러운 환경/프라이버시 운영용 */}
+          <button
+            onClick={onToggleVoice}
+            aria-label={voiceEnabled ? '음성 끄기' : '음성 켜기'}
+            aria-pressed={voiceEnabled}
+            title={voiceEnabled ? '음성 켜짐 (눌러서 끄기)' : '음성 꺼짐 (눌러서 켜기)'}
+            className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border active:scale-95 sm:h-11 sm:w-11 sm:rounded-xl ${
+              voiceEnabled
+                ? 'border-gold-400 bg-gold-500 text-navy-900'
+                : 'border-ink/30 text-ink/70'
+            }`}
+          >
+            {voiceEnabled ? (
+              // 스피커 켜짐
+              <svg
+                className="h-4 w-4 sm:h-5 sm:w-5"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+              >
+                <path d="M11 5 6 9H2v6h4l5 4V5Z" />
+                <path d="M15.5 8.5a5 5 0 0 1 0 7M19 5a9 9 0 0 1 0 14" />
+              </svg>
+            ) : (
+              // 스피커 꺼짐 (mute)
+              <svg
+                className="h-4 w-4 sm:h-5 sm:w-5"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+              >
+                <path d="M11 5 6 9H2v6h4l5 4V5Z" />
+                <path d="m22 9-6 6M16 9l6 6" />
+              </svg>
+            )}
+          </button>
           {/* 테마 토글 (아이콘) */}
           <button
             onClick={onToggleTheme}
@@ -426,7 +469,7 @@ export default function ConsultScreen({
 
         {/* 음성 CTA — 키오스크(lg+) 기본. 큰 마이크가 주인공 */}
         <div
-          className={`${showKeyboard ? 'hidden' : 'hidden lg:flex'} flex-col items-center gap-2 border-t border-gold-500/20 px-8 py-5`}
+          className={`${showKeyboard || !voiceEnabled ? 'hidden' : 'hidden lg:flex'} flex-col items-center gap-2 border-t border-gold-500/20 px-8 py-5`}
         >
           <button
             onClick={onMic}
@@ -477,25 +520,27 @@ export default function ConsultScreen({
         <div
           className={`${showKeyboard ? 'flex' : 'flex lg:hidden'} items-center gap-2 border-t border-gold-500/20 px-4 py-3 sm:gap-3 sm:px-8 sm:py-5`}
         >
-          <button
-            onClick={onMic}
-            disabled={!supported || loading}
-            title={supported ? '음성으로 질문' : '이 브라우저는 음성 인식을 지원하지 않습니다'}
-            className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-full transition active:scale-95 disabled:opacity-30 sm:h-16 sm:w-16 ${
-              listening ? 'animate-pulse-ring bg-red-500 text-white' : 'bg-gold-500 text-navy-900'
-            }`}
-          >
-            <svg
-              className="h-5 w-5 sm:h-7 sm:w-7"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
+          {voiceEnabled && (
+            <button
+              onClick={onMic}
+              disabled={!supported || loading}
+              title={supported ? '음성으로 질문' : '이 브라우저는 음성 인식을 지원하지 않습니다'}
+              className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-full transition active:scale-95 disabled:opacity-30 sm:h-16 sm:w-16 ${
+                listening ? 'animate-pulse-ring bg-red-500 text-white' : 'bg-gold-500 text-navy-900'
+              }`}
             >
-              <path d="M9 11a3 3 0 0 0 6 0V5a3 3 0 0 0-6 0v6Z" />
-              <path d="M5 11a7 7 0 0 0 14 0M12 18v3" />
-            </svg>
-          </button>
+              <svg
+                className="h-5 w-5 sm:h-7 sm:w-7"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+              >
+                <path d="M9 11a3 3 0 0 0 6 0V5a3 3 0 0 0-6 0v6Z" />
+                <path d="M5 11a7 7 0 0 0 14 0M12 18v3" />
+              </svg>
+            </button>
+          )}
           <input
             value={input}
             onChange={(e) => setInput(e.target.value)}

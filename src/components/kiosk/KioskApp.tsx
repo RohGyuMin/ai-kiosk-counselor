@@ -31,16 +31,28 @@ export default function KioskApp() {
   const [summary, setSummary] = useState<SummaryData>({ questionCount: 0, topics: [] });
   // 테마 — 기본 라이트, localStorage에 유지
   const [theme, setTheme] = useState<'light' | 'dark'>('light');
+  // 음성 모드 — 기본 ON. 실운영 시 끌 수 있게(노이즈·프라이버시 환경)
+  const [voiceEnabled, setVoiceEnabled] = useState(true);
 
   useEffect(() => {
-    const saved = window.localStorage.getItem('kiosk-theme');
-    if (saved === 'dark' || saved === 'light') setTheme(saved);
+    const savedTheme = window.localStorage.getItem('kiosk-theme');
+    if (savedTheme === 'dark' || savedTheme === 'light') setTheme(savedTheme);
+    const savedVoice = window.localStorage.getItem('kiosk-voice');
+    if (savedVoice === 'off') setVoiceEnabled(false);
   }, []);
 
   const toggleTheme = useCallback(() => {
     setTheme((t) => {
       const next = t === 'light' ? 'dark' : 'light';
       window.localStorage.setItem('kiosk-theme', next);
+      return next;
+    });
+  }, []);
+
+  const toggleVoice = useCallback(() => {
+    setVoiceEnabled((v) => {
+      const next = !v;
+      window.localStorage.setItem('kiosk-voice', next ? 'on' : 'off');
       return next;
     });
   }, []);
@@ -118,6 +130,8 @@ export default function KioskApp() {
             onEnd={handleEnd}
             theme={theme}
             onToggleTheme={toggleTheme}
+            voiceEnabled={voiceEnabled}
+            onToggleVoice={toggleVoice}
           />
         )}
         {stage === 'summary' && (
