@@ -3,7 +3,7 @@
 // 상담 화면 — 음성/텍스트 질문 → AI 답변(음성+텍스트+동기 이미지)
 import { useCallback, useEffect, useRef, useState } from 'react';
 import Image from 'next/image';
-import { MEDIA, SUGGESTED_QUESTIONS } from '@/lib/knowledge';
+import { MEDIA, SUGGESTED_QUESTIONS, buildGreeting, getFollowupSuggestions } from '@/lib/knowledge';
 import { useSpeech } from '@/lib/speech';
 import type { ChatMessage, ChatResponse } from '@/lib/types';
 import type { SummaryData, Visitor } from './KioskApp';
@@ -59,6 +59,8 @@ export default function ConsultScreen({
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
   const [imageKey, setImageKey] = useState<string>('overview');
+  // 직전 답변 키워드 — 추천 질문 갱신용
+  const [lastKeyword, setLastKeyword] = useState<string | undefined>(undefined);
   const topicsRef = useRef<Set<string>>(new Set());
   const scrollRef = useRef<HTMLDivElement>(null);
   // StrictMode 이중 마운트 / 재렌더에 대비한 인사 1회 가드
@@ -75,9 +77,7 @@ export default function ConsultScreen({
     if (greetedRef.current) return;
     greetedRef.current = true;
     unlockAudio();
-    const greeting = visitor.anonymous
-      ? '안녕하세요, 한빛내과의원 AI 안내입니다. 진료시간, 위치, 접수 방법 등 무엇이든 편하게 물어보세요.'
-      : `안녕하세요 ${visitor.name}님, 한빛내과의원 AI 안내입니다. 진료시간, 위치, 접수 방법 등 무엇이든 물어보세요.`;
+    const greeting = buildGreeting({ name: visitor.name, anonymous: visitor.anonymous });
     setMessages([{ role: 'assistant', content: greeting, source: 'llm' }]);
     void speak(greeting);
   }, [unlockAudio, speak, visitor.name, visitor.anonymous]);
@@ -103,7 +103,10 @@ export default function ConsultScreen({
           { role: 'assistant', content: data.answer, source: data.source, stream: true },
         ]);
         if (data.imageKey && MEDIA[data.imageKey]) setImageKey(data.imageKey);
-        if (data.keyword) topicsRef.current.add(data.keyword);
+        if (data.keyword) {
+          topicsRef.current.add(data.keyword);
+          setLastKeyword(data.keyword);
+        }
         void speak(data.answer); // 서버(Gemini) TTS → 실패 시 브라우저 음성 자동 폴백
       } catch {
         const errMsg = '죄송합니다. 잠시 후 다시 시도해 주세요.';
@@ -334,9 +337,9 @@ export default function ConsultScreen({
           )}
         </div>
 
-        {/* 추천 질문 (모바일에선 가로 스크롤로 한 줄) */}
+        {/* 추천 질문 — 첫 질문 전엔 일반 추천, 이후엔 마지막 키워드 기반 후속 */}
         <div className="flex gap-2 overflow-x-auto px-4 pb-2 sm:flex-wrap sm:overflow-visible sm:px-8 sm:pb-3">
-          {SUGGESTED_QUESTIONS.map((q) => (
+          {(lastKeyword ? getFollowupSuggestions(lastKeyword) : SUGGESTED_QUESTIONS).map((q) => (
             <button
               key={q}
               onClick={() => ask(q)}

@@ -1,26 +1,62 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 500" width="800" height="500">
   <defs>
-    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0" stop-color="#0f3460"/><stop offset="1" stop-color="#0d2137"/>
+    <linearGradient id="rbg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#122150"/><stop offset="1" stop-color="#0b1733"/>
+    </linearGradient>
+    <linearGradient id="rdesk" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#1b2f6e"/><stop offset="1" stop-color="#0b1733"/>
     </linearGradient>
   </defs>
-  <rect width="800" height="500" fill="url(#bg)"/>
-  <text x="400" y="55" fill="#1abfaa" font-size="26" font-family="sans-serif" text-anchor="middle" font-weight="bold">접수 방법 안내</text>
-  <rect x="60" y="90" width="320" height="290" rx="14" fill="#0e9f8c" fill-opacity="0.12" stroke="#0e9f8c" stroke-width="2"/>
-  <text x="220" y="130" fill="#1abfaa" font-size="20" font-family="sans-serif" text-anchor="middle" font-weight="bold">사전 예약</text>
-  <line x1="90" y1="148" x2="350" y2="148" stroke="#0e9f8c" stroke-width="1" opacity="0.5"/>
-  <text x="220" y="185" fill="#e8f5f3" font-size="15" font-family="sans-serif" text-anchor="middle">네이버 예약 앱</text>
-  <text x="220" y="210" fill="#e8f5f3" font-size="15" font-family="sans-serif" text-anchor="middle">또는 똑닥 앱 이용</text>
-  <text x="220" y="250" fill="#1abfaa" font-size="14" font-family="sans-serif" text-anchor="middle" opacity="0.9">당일 예약 당일 진료 가능</text>
-  <text x="220" y="275" fill="#e8f5f3" font-size="13" font-family="sans-serif" text-anchor="middle" opacity="0.7">대기 시간 단축 효과</text>
-  <rect x="420" y="90" width="320" height="290" rx="14" fill="#0e9f8c" fill-opacity="0.12" stroke="#0e9f8c" stroke-width="2"/>
-  <text x="580" y="130" fill="#1abfaa" font-size="20" font-family="sans-serif" text-anchor="middle" font-weight="bold">현장 접수</text>
-  <line x1="450" y1="148" x2="710" y2="148" stroke="#0e9f8c" stroke-width="1" opacity="0.5"/>
-  <text x="580" y="185" fill="#e8f5f3" font-size="15" font-family="sans-serif" text-anchor="middle">키오스크에서</text>
-  <text x="580" y="210" fill="#e8f5f3" font-size="15" font-family="sans-serif" text-anchor="middle">번호표 발급</text>
-  <text x="580" y="250" fill="#1abfaa" font-size="14" font-family="sans-serif" text-anchor="middle" opacity="0.9">순서대로 호명 시 입장</text>
-  <text x="580" y="275" fill="#e8f5f3" font-size="13" font-family="sans-serif" text-anchor="middle" opacity="0.7">대기 중 앱 확인 가능</text>
-  <rect x="60" y="405" width="680" height="70" rx="12" fill="#0e9f8c" fill-opacity="0.1" stroke="#0e9f8c" stroke-width="1.5"/>
-  <text x="400" y="432" fill="#1abfaa" font-size="16" font-family="sans-serif" text-anchor="middle" font-weight="bold">준비물</text>
-  <text x="400" y="458" fill="#e8f5f3" font-size="14" font-family="sans-serif" text-anchor="middle">신분증 · 건강보험증(앱 가능) · 기존 복용약 목록</text>
+  <rect width="800" height="500" fill="url(#rbg)"/>
+  <text x="400" y="56" fill="#d8bd85" font-size="26" font-family="serif" text-anchor="middle">접수 안내</text>
+  <text x="400" y="84" fill="#d8bd85" font-size="13" font-family="sans-serif" letter-spacing="6" text-anchor="middle" opacity="0.7">RECEPTION</text>
+
+  <g font-family="sans-serif">
+    <!-- 번호 디스플레이 (좌측) -->
+    <g transform="translate(60,130)">
+      <rect width="300" height="280" rx="14" fill="#0b1733" stroke="#c8a86a" stroke-opacity="0.4"/>
+      <text x="150" y="44" fill="#d8bd85" font-size="14" letter-spacing="3" text-anchor="middle" opacity="0.7">NOW SERVING</text>
+      <text x="150" y="148" fill="#d8bd85" font-size="100" font-family="serif" font-weight="700" text-anchor="middle">A-23</text>
+      <line x1="40" y1="180" x2="260" y2="180" stroke="#c8a86a" stroke-opacity="0.3"/>
+      <g fill="#f6f1e7" font-size="14" opacity="0.85">
+        <text x="40" y="216">다음 번호</text>
+        <text x="260" y="216" text-anchor="end" fill="#d8bd85">A-24, A-25</text>
+        <text x="40" y="244">진료실</text>
+        <text x="260" y="244" text-anchor="end" fill="#d8bd85">3진료실</text>
+      </g>
+    </g>
+
+    <!-- 접수 방법 카드 (우측) -->
+    <g transform="translate(400,130)">
+      <rect width="340" height="280" rx="14" fill="url(#rdesk)" stroke="#c8a86a" stroke-opacity="0.4"/>
+      <text x="22" y="40" fill="#d8bd85" font-size="14" letter-spacing="2">3가지 접수 방법</text>
+      <line x1="22" y1="54" x2="318" y2="54" stroke="#c8a86a" stroke-opacity="0.3"/>
+
+      <!-- 방법 1: 네이버 예약 -->
+      <g transform="translate(22,76)">
+        <circle cx="14" cy="14" r="14" fill="#c8a86a" opacity="0.18"/>
+        <text x="14" y="19" fill="#d8bd85" font-size="13" font-weight="700" text-anchor="middle">N</text>
+        <text x="42" y="14" fill="#f6f1e7" font-size="15" font-weight="600">네이버 예약</text>
+        <text x="42" y="32" fill="#f6f1e7" font-size="12" opacity="0.7">사전 예약 · 시간 지정</text>
+      </g>
+      <!-- 방법 2: 똑닥 -->
+      <g transform="translate(22,138)">
+        <circle cx="14" cy="14" r="14" fill="#c8a86a" opacity="0.18"/>
+        <rect x="6" y="6" width="16" height="16" rx="3" fill="none" stroke="#d8bd85" stroke-width="2"/>
+        <text x="42" y="14" fill="#f6f1e7" font-size="15" font-weight="600">똑닥 앱</text>
+        <text x="42" y="32" fill="#f6f1e7" font-size="12" opacity="0.7">당일 대기 등록</text>
+      </g>
+      <!-- 방법 3: 현장 키오스크 -->
+      <g transform="translate(22,200)">
+        <circle cx="14" cy="14" r="14" fill="#d8bd85"/>
+        <path d="M 8 9 L 20 9 L 18 19 L 10 19 Z" fill="#0b1733"/>
+        <text x="42" y="14" fill="#d8bd85" font-size="15" font-weight="700">현장 키오스크</text>
+        <text x="42" y="32" fill="#f6f1e7" font-size="12" opacity="0.85">번호표 발급 · 즉시</text>
+      </g>
+    </g>
+  </g>
+
+  <text x="400" y="466" fill="#f6f1e7" font-size="13" text-anchor="middle" font-family="sans-serif" opacity="0.55">
+    준비물 · 신분증 · 건강보험증(앱) · 기존 복용약 목록
+  </text>
 </svg>

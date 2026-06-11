@@ -264,6 +264,47 @@ export function inferImageKey(message: string): string | undefined {
   return DEFAULT_FALLBACK.imageKey;
 }
 
+/** 시간대 + 이름 + 익명 여부에 따라 다양한 인사를 생성 */
+export function buildGreeting(opts: { name?: string; anonymous?: boolean; hour?: number }): string {
+  const h = opts.hour ?? new Date().getHours();
+  const slot =
+    h < 6
+      ? '이른 새벽'
+      : h < 11
+        ? '아침'
+        : h < 13
+          ? '점심'
+          : h < 17
+            ? '오후'
+            : h < 21
+              ? '저녁'
+              : '늦은 저녁';
+
+  const timeOpener = h < 11 ? '오늘 아침' : h < 13 ? '점심시간' : h < 17 ? '오후' : '저녁';
+
+  const closers = [
+    '진료시간, 위치, 접수 방법 등 무엇이든 편하게 물어보세요.',
+    '오늘 어떤 안내가 필요하신가요?',
+    '진료·예약·증상 안내 무엇이든 도와드리겠습니다.',
+    '편하게 말씀하시면 안내해 드릴게요.',
+  ];
+  // 시간대 기반 결정론적 선택 (같은 분에 들어오면 같은 인사)
+  const idx = Math.floor((h * 60 + new Date().getMinutes()) / 7) % closers.length;
+  const closer = closers[idx];
+
+  if (opts.anonymous) {
+    return slot === '이른 새벽' || slot === '늦은 저녁'
+      ? `안녕하세요, 한빛내과의원 AI 안내입니다. ${closer}`
+      : `${timeOpener}에도 한빛내과의원을 찾아 주셔서 감사합니다. ${closer}`;
+  }
+  const name = (opts.name || '').trim();
+  if (!name) return `안녕하세요, 한빛내과의원 AI 안내입니다. ${closer}`;
+  return slot === '이른 새벽' || slot === '늦은 저녁'
+    ? `${name}님, 한빛내과의원 AI 안내입니다. ${closer}`
+    : `${name}님, ${timeOpener}에 한빛내과의원을 찾아 주셔서 감사합니다. ${closer}`;
+}
+
+/** 초기(대화 시작 시) 표시되는 추천 질문 */
 export const SUGGESTED_QUESTIONS = [
   '진료시간이 어떻게 되나요?',
   '예약은 어떻게 하나요?',
@@ -271,6 +312,53 @@ export const SUGGESTED_QUESTIONS = [
   '주차는 어떻게 하나요?',
   '독감 접종 가능한가요?',
   '처방전 재발급 받을 수 있나요?',
-  '아이도 진료 받을 수 있나요?',
-  '진료비가 얼마나 되나요?',
 ];
+
+/** 직전 답변 키워드에 따라 자연스럽게 이어갈 후속 질문 */
+export const FOLLOWUP_BY_KEYWORD: Record<string, string[]> = {
+  진료시간: ['지금 가면 진료 받을 수 있나요?', '점심시간에도 접수되나요?', '주말에도 진료하나요?'],
+  '진료과/전문': [
+    '아이도 진료 받을 수 있나요?',
+    '건강검진도 가능한가요?',
+    '소아과 진료 시간은 따로인가요?',
+  ],
+  '위치/주차': ['지하철에서 얼마나 걸리나요?', '주차 시간 연장도 되나요?', '근처에 약국이 있나요?'],
+  '접수/예약': [
+    '예약 없이 바로 진료 되나요?',
+    '준비물은 어떻게 되나요?',
+    '대기 시간은 얼마나 되나요?',
+  ],
+  예약: [
+    '예약을 취소하려면 어떻게 하나요?',
+    '대기 시간은 얼마나 되나요?',
+    '준비물은 무엇이 필요한가요?',
+  ],
+  '보험/비용': [
+    '비급여 항목은 뭐가 있나요?',
+    '실비 청구 서류 받을 수 있나요?',
+    '비용 결제는 카드도 되나요?',
+  ],
+  '의료진/병원소개': [
+    '진료시간이 어떻게 되나요?',
+    '어떤 진료과가 있나요?',
+    '예약은 어떻게 하나요?',
+  ],
+  증상상담: [
+    '예약 없이 바로 진료 가능한가요?',
+    '준비물은 무엇이 필요한가요?',
+    '진료비는 얼마인가요?',
+  ],
+  처방: ['처방전 분실했어요', '인근 약국은 어디인가요?', '만성질환 재처방 받으려면요?'],
+  예방접종: [
+    '독감 접종 비용은 얼마인가요?',
+    '아이 예방접종도 가능한가요?',
+    '예약하고 가야 하나요?',
+  ],
+  응급: ['가까운 응급실은 어디인가요?', '의원 진료시간은 언제인가요?', '예약 가능한가요?'],
+  일반문의: ['진료시간이 어떻게 되나요?', '예약은 어떻게 하나요?', '어디에 위치해 있나요?'],
+};
+
+export function getFollowupSuggestions(lastKeyword?: string): string[] {
+  if (lastKeyword && FOLLOWUP_BY_KEYWORD[lastKeyword]) return FOLLOWUP_BY_KEYWORD[lastKeyword];
+  return SUGGESTED_QUESTIONS.slice(0, 3);
+}
