@@ -14,6 +14,24 @@ interface DisplayMessage extends ChatMessage {
   stream?: boolean;
 }
 
+/** 답변 말풍선 옆 프로필 아바타 (상담사 얼굴 크롭) */
+function AssistantAvatar({ pulse }: { pulse?: boolean }) {
+  return (
+    <div className="relative h-8 w-8 shrink-0 self-end sm:h-9 sm:w-9">
+      {pulse && (
+        <span className="ai-ripple ai-ripple-speaking absolute inset-0 rounded-full border border-gold-400/60" />
+      )}
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img
+        src="/media/counselor.png"
+        alt=""
+        aria-hidden="true"
+        className="relative h-full w-full rounded-full object-cover object-top ring-1 ring-gold-500/30"
+      />
+    </div>
+  );
+}
+
 /** 답변 텍스트를 한 글자씩 표시 (~25ms/char) */
 function StreamedText({ text }: { text: string }) {
   const [shown, setShown] = useState('');
@@ -65,21 +83,6 @@ export default function ConsultScreen({
   const [largeText, setLargeText] = useState(false);
   // 키오스크(lg+)에서 텍스트 입력창 표시 여부 — 기본은 음성 중심이라 숨김
   const [showKeyboard, setShowKeyboard] = useState(false);
-  // 캐릭터 프레임 존재 여부 (있으면 입벌림/눈깜빡임 애니메이션, 없으면 기본 이미지만)
-  const [hasTalkFrame, setHasTalkFrame] = useState(false);
-  const [hasBlinkFrame, setHasBlinkFrame] = useState(false);
-
-  // 추가 프레임 프리로드 — 로드 성공 시에만 애니메이션 활성화 (무회귀)
-  useEffect(() => {
-    const probe = (src: string, ok: (v: boolean) => void) => {
-      const img = new window.Image();
-      img.onload = () => ok(true);
-      img.onerror = () => ok(false);
-      img.src = src;
-    };
-    probe('/media/counselor-talk.png', setHasTalkFrame);
-    probe('/media/counselor-blink.png', setHasBlinkFrame);
-  }, []);
   const topicsRef = useRef<Set<string>>(new Set());
   const scrollRef = useRef<HTMLDivElement>(null);
   // StrictMode 이중 마운트 / 재렌더에 대비한 인사 1회 가드
@@ -170,13 +173,6 @@ export default function ConsultScreen({
   // AI 엠블럼 상태
   const orbMode: 'idle' | 'thinking' | 'speaking' =
     loading || listening ? 'thinking' : speaking ? 'speaking' : 'idle';
-  // 캐릭터 모션 — 발화: 흔들림, 사고/청취: 가벼운 호흡, 대기: 부유
-  const charMotion =
-    orbMode === 'speaking'
-      ? 'char-speaking'
-      : orbMode === 'thinking'
-        ? 'char-listening'
-        : 'char-idle';
   const rippleClass =
     orbMode === 'thinking'
       ? 'ai-ripple ai-ripple-thinking'
@@ -188,71 +184,10 @@ export default function ConsultScreen({
       {/* 앰비언트 오로라 배경 */}
       <div className="aurora" />
 
-      {/* 좌측: AI 상담사 캐릭터(주인공) + 동기 안내 이미지 */}
+      {/* 좌측: 동기 안내 이미지 (지도·시계·번호표 등) */}
       <div className="relative z-10 hidden w-[42%] flex-col items-center justify-center border-r border-gold-500/20 p-8 lg:flex">
-        {/* 상담사 캐릭터 — 모션(부유/흔들림) + 아우라(글로우) + 입·눈 프레임 교체 */}
-        <div className={`mb-3 ${charMotion}`}>
-          <div
-            className={`relative w-44 overflow-hidden rounded-3xl xl:w-52 ${
-              orbMode === 'idle' ? 'char-aura' : 'char-aura-active'
-            }`}
-          >
-            {/* 베이스 프레임 */}
-            <Image
-              src="/media/counselor.png"
-              alt="AI 상담사"
-              width={1024}
-              height={1536}
-              className="block h-auto w-full"
-              priority
-            />
-            {/* 눈 깜빡임 오버레이 (프레임 있을 때만) */}
-            {hasBlinkFrame && (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img
-                src="/media/counselor-blink.png"
-                alt=""
-                aria-hidden="true"
-                className="blink-flash absolute inset-0 h-full w-full"
-              />
-            )}
-            {/* 입벌림 오버레이 — 발화 중에만 깜빡임 (프레임 있을 때만) */}
-            {hasTalkFrame && speaking && (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img
-                src="/media/counselor-talk.png"
-                alt=""
-                aria-hidden="true"
-                className="mouth-flap absolute inset-0 h-full w-full"
-              />
-            )}
-            {/* 발화 중 사운드웨이브 — 프레임 없을 때(립싱크 대체)만, 캐릭터 하단에 겹쳐서 */}
-            {speaking && !hasTalkFrame && (
-              <div
-                className="absolute inset-x-0 bottom-0 flex items-end justify-center gap-1 bg-gradient-to-t from-deep/80 to-transparent pb-3 pt-8"
-                aria-label="음성 안내 중"
-              >
-                {[0, 1, 2, 3, 4].map((i) => (
-                  <span
-                    key={i}
-                    className="w-1.5 rounded bg-gold-400"
-                    style={{
-                      height: 20,
-                      transformOrigin: 'bottom',
-                      animation: `soundwave 0.9s ease-in-out ${i * 0.12}s infinite`,
-                    }}
-                  />
-                ))}
-              </div>
-            )}
-          </div>
-        </div>
-        <p className="mb-5 text-xs uppercase tracking-[0.3em] text-gold-500/80">
-          {orbMode === 'thinking' ? 'Listening' : orbMode === 'speaking' ? 'Speaking' : 'Ready'}
-        </p>
-
         <div
-          className="animate-fade-up w-full max-w-sm overflow-hidden rounded-2xl shadow-2xl"
+          className="animate-fade-up w-full max-w-md overflow-hidden rounded-2xl shadow-2xl"
           key={imageKey}
         >
           <Image
@@ -264,15 +199,30 @@ export default function ConsultScreen({
             priority
           />
         </div>
-        <p className="mt-4 text-center text-lg text-gold-500">{media.alt}</p>
+        <p className="mt-5 text-center text-lg text-gold-500">{media.alt}</p>
+        {speaking && (
+          <div className="mt-6 flex items-end gap-1" aria-label="음성 안내 중">
+            {[0, 1, 2, 3, 4].map((i) => (
+              <span
+                key={i}
+                className="w-1.5 rounded bg-gold-400"
+                style={{
+                  height: 24,
+                  transformOrigin: 'bottom',
+                  animation: `soundwave 0.9s ease-in-out ${i * 0.12}s infinite`,
+                }}
+              />
+            ))}
+          </div>
+        )}
       </div>
 
       {/* 우측: 대화 — min-w-0 으로 flex 자식 가로 넘침 방지 */}
       <div className="relative z-10 flex min-w-0 flex-1 flex-col">
         {/* 헤더 */}
         <div className="flex items-center justify-between gap-3 border-b border-gold-500/20 px-4 py-3 sm:px-8 sm:py-5">
-          {/* 상담사 아바타 (모바일) — 발화/사고 시 펄스 링 */}
-          <div className="relative flex h-10 w-10 shrink-0 items-center justify-center lg:hidden">
+          {/* 상담사 아바타 (전 화면) — 발화/사고 시 펄스 링 */}
+          <div className="relative flex h-10 w-10 shrink-0 items-center justify-center">
             {orbMode !== 'idle' && (
               <span
                 className={`absolute inset-0 rounded-full border border-gold-400/50 ${rippleClass}`}
@@ -358,24 +308,37 @@ export default function ConsultScreen({
               </p>
             </div>
           )}
-          {messages.map((m, i) => (
-            <div key={i} className={`flex ${m.role === 'user' ? 'justify-end' : 'justify-start'}`}>
+          {messages.map((m, i) => {
+            // 답변 음성 재생 중이면 마지막 답변 아바타에 펄스
+            const isLastAssistant = m.role === 'assistant' && i === messages.length - 1 && speaking;
+            return (
               <div
-                className={`animate-fade-up max-w-[80%] break-words rounded-2xl px-4 py-3 leading-relaxed [overflow-wrap:anywhere] sm:px-5 sm:py-4 ${
-                  largeText ? 'text-xl sm:text-2xl' : 'text-base sm:text-lg'
-                } ${m.role === 'user' ? 'bg-gold-500 text-navy-900' : 'bg-ink/10 text-ink'}`}
+                key={i}
+                className={`flex items-end gap-2 ${m.role === 'user' ? 'justify-end' : 'justify-start'}`}
               >
-                {m.role === 'assistant' && m.stream ? <StreamedText text={m.content} /> : m.content}
-                {m.role === 'assistant' && m.source === 'fallback' && (
-                  <span className="ml-2 align-middle text-xs text-gold-500/80">
-                    · 오프라인 안내
-                  </span>
-                )}
+                {m.role === 'assistant' && <AssistantAvatar pulse={isLastAssistant} />}
+                <div
+                  className={`animate-fade-up max-w-[78%] break-words rounded-2xl px-4 py-3 leading-relaxed [overflow-wrap:anywhere] sm:px-5 sm:py-4 ${
+                    largeText ? 'text-xl sm:text-2xl' : 'text-base sm:text-lg'
+                  } ${m.role === 'user' ? 'bg-gold-500 text-navy-900' : 'bg-ink/10 text-ink'}`}
+                >
+                  {m.role === 'assistant' && m.stream ? (
+                    <StreamedText text={m.content} />
+                  ) : (
+                    m.content
+                  )}
+                  {m.role === 'assistant' && m.source === 'fallback' && (
+                    <span className="ml-2 align-middle text-xs text-gold-500/80">
+                      · 오프라인 안내
+                    </span>
+                  )}
+                </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
           {loading && (
-            <div className="flex justify-start">
+            <div className="flex items-end justify-start gap-2">
+              <AssistantAvatar />
               <div
                 className="flex items-center gap-2 rounded-2xl bg-ink/10 px-5 py-4 sm:px-6 sm:py-4"
                 aria-label="답변 생성 중"
