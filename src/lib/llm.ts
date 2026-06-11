@@ -10,7 +10,8 @@
 
 import Anthropic from '@anthropic-ai/sdk';
 import { GoogleGenAI } from '@google/genai';
-import { buildSystemPrompt, classifyKeyword, getFallbackAnswer, inferImageKey } from './knowledge';
+import { classifyKeyword, getFallbackAnswer, inferImageKey } from './knowledge';
+import { buildSystemPrompt } from './clinic-server';
 import type { ChatMessage, ChatResponse } from './types';
 
 type Provider = 'gemini' | 'anthropic' | 'none';

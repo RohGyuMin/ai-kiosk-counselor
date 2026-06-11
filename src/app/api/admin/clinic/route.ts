@@ -1,7 +1,8 @@
 // 병원 정보 자가편집 — GET(현재 편집된 값) / PUT(저장)
 // /admin 경로 미들웨어가 Basic Auth로 보호함
 import { NextRequest, NextResponse } from 'next/server';
-import { getCurrentEditable, type ClinicEditable } from '@/lib/knowledge';
+import { type ClinicEditable } from '@/lib/knowledge';
+import { getCurrentEditable } from '@/lib/clinic-server';
 import { setClinicOverride } from '@/lib/db';
 
 export const runtime = 'nodejs';
